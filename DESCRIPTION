@@ -16,3 +16,5 @@ Suggests: knitr,
     rmarkdown,
     testthat
 VignetteBuilder: knitr
+URL: https://github.com/ERottler/alpTempR
+BugReports: https://github.com/ERottler/alpTempR/issues
