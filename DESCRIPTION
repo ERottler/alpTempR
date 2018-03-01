@@ -11,7 +11,11 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1
 Imports:
-    zoo
+    base,
+    stats,
+    zoo,
+    zyp,
+    Kendall
 Suggests: knitr,
     rmarkdown,
     testthat
