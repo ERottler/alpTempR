@@ -14,15 +14,6 @@
 #' pres2ahum(vapor_pres = 5.5, temp = 20)
 #' @export
 
-
-start_year   <- 1981
-end_year     <- 2017
-window_width <- 90
-cover_thresh    <- 32/37
-method_analys <- "snow_window_likeli_sens_slope"
-dates <- snow_data$date
-values <- snow_data[, 144]
-
 moving_analys <- function(dates, values, start_year, end_year, window_width,
                           cover_thresh, method_analys){
 
