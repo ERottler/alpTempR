@@ -6,6 +6,8 @@
 
 library("alpTempR")
 library("zoo")
+library("modifiedmk")
+library("zyp")
 
 base_dir <- "u:/RhineFlow/Elevation/Data/"
 
@@ -56,11 +58,11 @@ f_li <- function(data_in){moving_analys(dates = date_data, values= data_in,
                                         method_analys = "snow_likelihood")}
 
 f_sl_sn <- function(data_in){moving_analys(dates = date_data, values= data_in,
-                                        start_year = start_year,
-                                        end_year = end_year,
-                                        window_width = window_width,
-                                        cover_thres = cover_thres,
-                                        method_analys = "snow_window_likeli_sens_slope")}
+                                           start_year = start_year,
+                                           end_year = end_year,
+                                           window_width = window_width,
+                                           cover_thres = cover_thres,
+                                           method_analys = "snow_window_likeli_sens_slope")}
 
 f_mk_sn <- function(data_in){moving_analys(dates = date_data, values= data_in,
                                              start_year = start_year,
@@ -69,16 +71,17 @@ f_mk_sn <- function(data_in){moving_analys(dates = date_data, values= data_in,
                                              cover_thres = cover_thres,
                                              method_analys = "snow_window_likeli_mk")}
 
-#Calculate trend magnitude using Sen's Slope (per decade)
-tem0_sl <- as.data.frame(apply(tem0_data[,-1], 2 , f_sl))*10 ; tem0_sl <- stat_coverage(tem0_sl)
-temx_sl <- as.data.frame(apply(temx_data[,-1], 2 , f_sl))*10 ; temx_sl <- stat_coverage(temx_sl)
-temn_sl <- as.data.frame(apply(temn_data[,-1], 2 , f_sl))*10 ; temn_sl <- stat_coverage(temn_sl)
-suns_sl <- as.data.frame(apply(suns_data[,-1], 2 , f_sl))*10 ; suns_sl <- stat_coverage(suns_sl)
-radi_sl <- as.data.frame(apply(radi_data[,-1], 2 , f_sl))*10 ; radi_sl <- stat_coverage(radi_sl)
-clou_sl <- as.data.frame(apply(clou_data[,-1], 2 , f_sl))*10 ; clou_sl <- stat_coverage(clou_sl)
-ahum_sl <- as.data.frame(apply(ahum_data[,-1], 2 , f_sl))*10 ; ahum_sl <- stat_coverage(ahum_sl)
-airp_sl <- as.data.frame(apply(airp_data[,-1], 2 , f_sl))*10 ; airp_sl <- stat_coverage(airp_sl)
-snow_sl <- as.data.frame(apply(snow_data[,-1], 2 , f_sl_sn))*10 ; snow_sl <- stat_coverage(snow_sl)
+#calculate trend magnitude using Sen's Slope (per decade)
+#only keep stations which had sufficient data coverage
+tem0_sl <- as.data.frame(apply(tem0_data[, -1], 2 , f_sl))*10 ; tem0_sl <- stat_coverage(tem0_sl)
+temx_sl <- as.data.frame(apply(temx_data[, -1], 2 , f_sl))*10 ; temx_sl <- stat_coverage(temx_sl)
+temn_sl <- as.data.frame(apply(temn_data[, -1], 2 , f_sl))*10 ; temn_sl <- stat_coverage(temn_sl)
+suns_sl <- as.data.frame(apply(suns_data[, -1], 2 , f_sl))*10 ; suns_sl <- stat_coverage(suns_sl)
+radi_sl <- as.data.frame(apply(radi_data[, -1], 2 , f_sl))*10 ; radi_sl <- stat_coverage(radi_sl)
+clou_sl <- as.data.frame(apply(clou_data[, -1], 2 , f_sl))*10 ; clou_sl <- stat_coverage(clou_sl)
+ahum_sl <- as.data.frame(apply(ahum_data[, -1], 2 , f_sl))*10 ; ahum_sl <- stat_coverage(ahum_sl)
+airp_sl <- as.data.frame(apply(airp_data[, -1], 2 , f_sl))*10 ; airp_sl <- stat_coverage(airp_sl)
+snow_sl <- as.data.frame(apply(snow_data[, -1], 2 , f_sl_sn))*10 ; snow_sl <- stat_coverage(snow_sl)
 
 #Calculate singificance of trends using Mann Kendall
 tem0_mk <- as.data.frame(apply(tem0_data[, -1], 2 , f_mk)) ; tem0_mk <- stat_coverage(tem0_mk)
@@ -127,8 +130,9 @@ temn_sl_an <- apply(temn_sl[,], 2, med_na)
 suns_sl_an <- apply(suns_sl[,], 2, med_na)
 radi_sl_an <- apply(radi_sl[,], 2, med_na)
 clou_sl_an <- apply(clou_sl[,], 2, med_na)
-ahum_sl_an <- apply(ahum_sl[,], 2, med_na)
+ahum_sr_an <- apply(ahum_sr[,], 2, med_na)
 airp_sl_an <- apply(airp_sl[,], 2, med_na)
+snow_sl_an <- apply(snow_sl[,], 2, mea_na) #mean average instead of median
 
 tem0_me_an <- apply(tem0_me[,], 2, med_na)
 temx_me_an <- apply(temx_me[,], 2, med_na)
@@ -138,35 +142,36 @@ radi_me_an <- apply(radi_me[,], 2, med_na)
 clou_me_an <- apply(clou_me[,], 2, med_na)
 ahum_me_an <- apply(ahum_me[,], 2, med_na)
 airp_me_an <- apply(airp_me[,], 2, med_na)
-
+snow_me_an <- apply(snow_me[,], 2, mea_na) #mean average instead of median
 
 #Meta data
-stationMeta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep=",", header=T)
+stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep=",", header=T)
 
-statsData <- unique(c(colnames(tem0_sl),colnames(temx_sl),colnames(temx_sl),
-                      colnames(snow_sl),colnames(clou_sl),colnames(radi_sl),
-                      colnames(suns_sl),colnames(ahum_sl),colnames(airp_sl)))
+stats_data <- unique(c(colnames(tem0_sl),colnames(temx_sl),colnames(temx_sl),
+                       colnames(snow_sl),colnames(clou_sl),colnames(radi_sl),
+                       colnames(suns_sl),colnames(ahum_sl),colnames(airp_sl)))
 
 statsData[which(!statsData %in% stationMeta$stn)]#station in data that are not in meta data
 stationMeta$stn[which(!stationMeta$stn %in% statsData)]#stations in meta data that are not in data
 
 #Get groups of stations
-allSt <- 1:nrow(stationMeta)
-higSt <- stationMeta$stn[which(stationMeta$category == "high")]
-midSt <- stationMeta$stn[which(stationMeta$category == "middle")]
-lowSt <- stationMeta$stn[which(stationMeta$category == "low")]
-homog <- stationMeta$stn[which(stationMeta$dataQual  == "homogenized")]
-quChe <- stationMeta$stn[which(stationMeta$dataQual  == "quality-checked")]
-higStNu <- which(stationMeta$category == "high")
-midStNu <- which(stationMeta$category == "middle")
-lowStNu <- which(stationMeta$category == "low")
-homogNu <- which(stationMeta$dataQual  == "homogenized")
-quCheNu <- which(stationMeta$dataQual  == "quality-checked")
+st_all <- stat_meta$stn
+st_hig <- stat_meta$stn[which(stat_meta$category == "high")]
+st_mid <- stat_meta$stn[which(stat_meta$category == "middle")]
+st_low <- stat_meta$stn[which(stat_meta$category == "low")]
+st_hom <- stat_meta$stn[which(stat_meta$data_qual  == "homogenized")]
+st_qch <- stat_meta$stn[which(stat_meta$data_qual  == "quality-checked")]
+st_all_nu <- 1:nrow(stat_meta)
+st_hig_nu <- which(stat_meta$category == "high")
+st_mid_nu <- which(stat_meta$category == "middle")
+st_low_nu <- which(stat_meta$category == "low")
+st_hom_nu <- which(stat_meta$data_qual  == "homogenized")
+st_qch_nu <- which(stat_meta$data_qual  == "quality-checked")
 
 #Mean elevation of categories
-eleHS <- mea_na(stationMeta$alt[higStNu])
-eleMS <- mea_na(stationMeta$alt[midStNu])
-eleLS <- mea_na(stationMeta$alt[lowStNu])
+ele_HS <- mea_na(stat_meta$alt[st_hig_nu])
+ele_MS <- mea_na(stat_meta$alt[st_mid_nu])
+ele_LS <- mea_na(stat_meta$alt[st_low_nu])
 
 #Difference Tmax and Tmin trends
 diff_max_min <- rep(NA,365)
@@ -187,10 +192,6 @@ for(i in 1:length(stat_IDs)){
     colnames(diff_max_min) <- paste0(colnames(temx_sl))
   }
 }
-
-
-
-
 
 
 

@@ -15,14 +15,13 @@
 #' @export
 
 
-# start_year   <- 1981
-#
-# end_year     <- 2017
-# window_width <- 90
-# cover_thresh    <- 32/37
-# method_analys <- "sens_slope"
-# dates <- tem0Data$date
-# values <- tem0Data$ALT
+start_year   <- 1981
+end_year     <- 2017
+window_width <- 90
+cover_thresh    <- 32/37
+method_analys <- "snow_window_likeli_sens_slope"
+dates <- snow_data$date
+values <- snow_data[, 144]
 
 moving_analys <- function(dates, values, start_year, end_year, window_width,
                           cover_thresh, method_analys){
@@ -76,7 +75,7 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
   }
 
   if(method_analys == "mean"){
-    f_mea_na_thres <- function(data_in){mea_na_thres(x = data_in, na_thres = cover_thresh)}
+    f_mea_na_thres <- function(data_in){mea_na_thres(x = data_in, na_thres = 1 - cover_thresh)}
     mov_res <- apply(data_day[,-1], 2, f_mea_na_thres)
   }
 
@@ -118,19 +117,16 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
                                FUN = mea_na_thres, align = "center", fill = NA)
 
     #Order data by day
-    data_day = matrix(NA, nrow=length(start_year:end_year), ncol=366)
+    data_day = matrix(NA, nrow=length(start_year:end_year), ncol = 366)
     colnames(data_day)=c("year", days)
-    data_day[,1] <- start_year:end_year
+    data_day[, 1] <- start_year:end_year
 
-    for(i in 0:(length(start_year:end_year)-1)) {
-
-      data_day[i+1,2:366] <- input_data$ma[(i*365+1) : ((i+1)*365)]
-
+    for(i in 0:(length(start_year:end_year) - 1)) {
+      data_day[i + 1, 2:366] <- input_data$ma[(i * 365 + 1):((i + 1 )* 365)]
     }
 
     #Calculate trends of snow likelihood
-
-    mov_res <- apply(data_day[,-1], 2, f_sens_slope)
+    mov_res <- apply(data_day[, -1], 2, f_sens_slope)
 
   }
 
@@ -146,20 +142,16 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
                                FUN = mea_na_thres, align = "center", fill = NA)
 
     #Order data by day
-    data_day = matrix(NA, nrow=length(start_year:end_year), ncol=366)
+    data_day = matrix(NA, nrow=length(start_year:end_year), ncol = 366)
     colnames(data_day)=c("year", days)
-    data_day[,1] <- start_year:end_year
+    data_day[, 1] <- start_year:end_year
 
-    for(i in 0:(length(start_year:end_year)-1)) {
-
-      data_day[i+1,2:366] <- input_data$ma[(i*365+1) : ((i+1)*365)]
-
+    for(i in 0:(length(start_year:end_year) - 1)) {
+      data_day[i + 1, 2:366] <- input_data$ma[(i * 365 + 1):((i + 1 )* 365)]
     }
 
-    #Calculate significance with Mann Kendall of snow window likelihood trend
-
-    mov_res <- apply(data_day[,-1], 2, f_mann_kendall)
-
+    #Calculate trends of snow likelihood
+    mov_res <- apply(data_day[, -1], 2, f_mann_kendall)
   }
 
   return(mov_res)
