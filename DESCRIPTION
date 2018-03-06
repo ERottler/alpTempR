@@ -1,4 +1,4 @@
-Package: alpTempR
+Package: alptempr
 Type: Package
 Title: Statistical analysis of alpine climatological data
 Version: 0.1.0
@@ -15,7 +15,8 @@ Imports:
     stats,
     zoo,
     zyp,
-    Kendall
+    Kendall,
+    RColorBrewer
 Suggests: knitr,
     rmarkdown,
     testthat

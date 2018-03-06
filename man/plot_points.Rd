@@ -4,7 +4,7 @@
 \alias{plot_points}
 \title{Plot points.}
 \usage{
-plot_points(data_in, data_meta, ID, no_Col = FALSE, is_hom = FALSE)
+plot_points(data_in, data_meta, ID, no_col = FALSE, is_hom = FALSE)
 }
 \arguments{
 \item{dates}{...}

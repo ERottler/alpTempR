@@ -2,21 +2,22 @@
 % Please edit documentation in R/method_analys.R
 \name{mann_kendall}
 \alias{mann_kendall}
-\title{Calculate significance of trend using Mann Kendall trend test.}
+\title{Pre-withened Mann-Kendall trend test significance.}
 \usage{
 mann_kendall(data_in, cover_thresh = 0.9)
 }
 \arguments{
 \item{data_in}{vector of input data}
 
-\item{cover_thresh}{Trend only calculated when percentage of NAs in input vector
-does not exceed cover_thresh (0-1)}
+\item{cover_thresh}{Significance only calculated when percentage of NAs in
+input vector does not exceed cover_thresh (0-1)}
 }
 \value{
-Nonlinear prewithened Sen´s slope trend.
+Kendall`s P-value computed on the final detrended time series.
 }
 \description{
-Calculation of non-linear prewhitened ...
+Assessment of trend significance using the Mann-Kendall trend test. Time series
+is prewithened using Zhang method \link{zyp.trend.vector}.
 }
 \examples{
 data_mk <-  c(2, 3, 5, 6 ,8, 5, 8, 12, NA, NA)

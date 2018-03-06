@@ -16,7 +16,7 @@
 image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="",
                              margins_1 = c(1.6,2.5,1.6,0), margins_2 = c(1.6,0.5,1.6,1.7),
                              isotherm_data = NULL, add_isotherms = FALSE,
-                             pos_iso_text = NULL, pos_ylab_lal = c(0.27, 0.71, 0.97)){
+                             pos_iso_text = NULL, pos_ylab_lal = c(0.27, 0.71, 0.985)){
 
   #Order data by altitude; add stations that are not in data file
   data_in <- order_add_stat(data_in, meta_stat = stat_meta)

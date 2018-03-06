@@ -119,7 +119,32 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
     #Calculate trends of snow likelihood
     mov_res <- apply(data_day[, -1], 2, f_sens_slope)
 
-  }
+    #When likelihood always (or only one value different from) 0 / 1 no trend
+    #calculated (NA), but trend is 0
+
+    for(i in 1:365){
+
+      #if trend magnitude calculated
+      if(length(which(is.na(data_day[, i+1]))) / nrow(data_day) < (1-cover_thresh)){
+
+        if((length(which(data_day[, i+1] == 1) + length(which(is.na(data_day[, i+1])))) >=
+                  (nrow(data_day) - 1))){
+          mov_res[i] <- 0
+        }
+
+        if((length(which(data_day[, i+1] == 0) + length(which(is.na(data_day[, i+1])))) >=
+                  (nrow(data_day) - 1))){
+          mov_res[i] <- 0
+        }
+      }
+    }
+
+
+    }
+
+
+
+
 
   if(method_analys == "snow_window_likeli_mk"){
     #Snow yes or no

@@ -81,7 +81,13 @@ radi_sl <- as.data.frame(apply(radi_data[, -1], 2 , f_sl))*10 ; radi_sl <- stat_
 clou_sl <- as.data.frame(apply(clou_data[, -1], 2 , f_sl))*10 ; clou_sl <- stat_coverage(clou_sl)
 ahum_sl <- as.data.frame(apply(ahum_data[, -1], 2 , f_sl))*10 ; ahum_sl <- stat_coverage(ahum_sl)
 airp_sl <- as.data.frame(apply(airp_data[, -1], 2 , f_sl))*10 ; airp_sl <- stat_coverage(airp_sl)
-snow_sl <- as.data.frame(apply(snow_data[, -1], 2 , f_sl_sn))*10 ; snow_sl <- stat_coverage(snow_sl)
+snow_sl <- as.data.frame(apply(snow_data[, -1], 2 , f_sl_sn))*10*100 ; snow_sl <- stat_coverage(snow_sl)
+
+
+t.dat <- c(0, 0.3, 1, 3, 3.4, 6)
+t.dat <- c(rep(1,37))
+zyp.trend.vector(t.dat, method="zhang")[2]
+
 
 #Calculate singificance of trends using Mann Kendall
 tem0_mk <- as.data.frame(apply(tem0_data[, -1], 2 , f_mk)) ; tem0_mk <- stat_coverage(tem0_mk)
@@ -194,7 +200,7 @@ for(i in 1:length(stat_IDs)){
 }
 
 
-
+Sys.time()
 
 
 
