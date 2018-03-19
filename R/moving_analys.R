@@ -125,15 +125,15 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
     for(i in 1:365){
 
       #if trend magnitude calculated
-      if(length(which(is.na(data_day[, i+1]))) / nrow(data_day) < (1-cover_thresh)){
+      if((length(which(is.na(data_day[, i+1]))) / nrow(data_day)) < (1 - cover_thresh)){
 
-        if((length(which(data_day[, i+1] == 1) + length(which(is.na(data_day[, i+1])))) >=
-                  (nrow(data_day) - 1))){
+        if(length(which(data_day[, i+1] == 1)) >=
+                  ((nrow(data_day) - 2) - length(which(is.na(data_day[, i+1]))))){
           mov_res[i] <- 0
         }
 
-        if((length(which(data_day[, i+1] == 0) + length(which(is.na(data_day[, i+1])))) >=
-                  (nrow(data_day) - 1))){
+        if(length(which(data_day[, i+1] == 0)) >=
+           ((nrow(data_day) - 2) - length(which(is.na(data_day[, i+1]))))){
           mov_res[i] <- 0
         }
       }

@@ -154,7 +154,7 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   #col2rgb("grey")
   my_gre <- rgb(190, 190, 190,   max=255, alpha = 60)
 
-  if(no_col){my_blu = my_red = my_bla = "white"}
+  if(no_col){my_blu = my_red = my_bla = rgb(0, 0, 0,   max=255, alpha = 0)}
 
   #Get elevation borders of categories
   hig_mid <- mea_na(c(min_na(data_meta$alt[which(data_meta$category == "high")]),

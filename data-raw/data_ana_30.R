@@ -23,7 +23,7 @@ load(paste0(base_dir,"pp0qffd0.RData")) ; airp_data <- out_data #Air pressure re
 
 start_year   <- 1981
 end_year     <- 2017
-window_width <- 90
+window_width <- 30
 cover_thres  <- 32/37
 
 #Functions

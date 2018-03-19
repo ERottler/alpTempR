@@ -56,7 +56,7 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
        col = "black", col.axis = "black", tck = -0.03)#plot ticks
   axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
        col="black", col.axis="black", mgp=c(3, 0.3, 0))#plot labels
-  mtext("Stations (increasing altitude)", 2, 1.2, cex = 0.7)
+  mtext("Stations (increasing elevation)", 2, 1.2, cex = 0.7)
   mtext(main, 3, 0.1, adj = 0.5, cex = 1)
   box()
 
