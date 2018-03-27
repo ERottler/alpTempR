@@ -9,9 +9,9 @@ stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep="
 
 #cycl_elev_mea----
 
-#pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
-png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
-    units = "in", res = 100)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
+# png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
+#     units = "in", res = 100)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -67,9 +67,9 @@ dev.off()
 
 #cycl_elev_slo----
 
-#pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
-png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
-    units = "in", res = 100)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
+# png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
+#     units = "in", res = 100)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -140,7 +140,7 @@ my_col <- colorRampPalette(brewer.pal(11,"RdYlBu"))(100); my_col <- my_col[lengt
 
 #pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
 png(paste0("u:/RhineFlow/Elevation/imag_elev_slo.png"), width = 6.7, height = 7,
-    units = "in", res = 100)
+    units = "in", res = 1200)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
