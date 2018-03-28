@@ -168,9 +168,9 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   rect(xleft = pardat$usr[1], ybottom = hig_mid, xright = pardat$usr[2],
        ytop = max_na(data_meta$alt)+300, col = my_blu, border = NA, lwd = 1)
   rect(xleft = pardat$usr[1], ybottom = mid_low,  xright = pardat$usr[2],
-       ytop = hig_mid-1, col = my_bla, border = NA, lwd = 1)
+       ytop = hig_mid-0.1, col = my_bla, border = NA, lwd = 1)
   rect(xleft = pardat$usr[1], ybottom = -300,    xright = pardat$usr[2],
-       ytop = mid_low-1,  col = my_red, border = NA, lwd = 1)
+       ytop = mid_low-0.1,  col = my_red, border = NA, lwd = 1)
 
   for(i in 1:length(stat_IDs)){
     plot_points(data_in = data_in_me, data_meta = data_meta, ID = stat_IDs[i],

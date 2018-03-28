@@ -31,7 +31,7 @@ iso_days <- function(data_in, isotherm = 0, meta_stat, smoo_val = 0.75){
 
     #If difference found temperature and isotherm too big, put to NA
     #Temperatures never reach selected isotherm temperature
-    if(min_na(abs(data_in[1:sep_day, i] - isotherm)) > 0.5){iso_day_asc <- NA}
+    if(min_na(abs(data_in[1:sep_day, i] - isotherm)) > 0.2){iso_day_asc <- NA}
 
     #Determination day on ascending part
     iso_day_des <- which(abs(data_in[(sep_day + 1):365, i] - isotherm) ==
@@ -39,7 +39,7 @@ iso_days <- function(data_in, isotherm = 0, meta_stat, smoo_val = 0.75){
 
     #If difference found temperature and isotherm too big, put to NA
     #Temperatures never reach selected isotherm temperature
-    if(min_na(abs(data_in[sep_day+1:365, i] - isotherm)) > 0.5){iso_day_des <- NA}
+    if(min_na(abs(data_in[sep_day+1:365, i] - isotherm)) > 0.2){iso_day_des <- NA}
 
     iso_days[1,i] <- iso_day_asc
     iso_days[2,i] <- iso_day_des
