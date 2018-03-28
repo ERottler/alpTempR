@@ -177,9 +177,9 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
                 no_col = no_col, is_hom = with_hom_dat)}
 
   #Plot annual average of category
-  ele_HS <- mea_na(stat_meta$alt[which(stat_meta$category == "high")])
-  ele_MS <- mea_na(stat_meta$alt[which(stat_meta$category == "middle")])
-  ele_LS <- mea_na(stat_meta$alt[which(stat_meta$category == "low")])
+  ele_HS <- mea_na(data_meta$alt[which(data_meta$category == "high")])
+  ele_MS <- mea_na(data_meta$alt[which(data_meta$category == "middle")])
+  ele_LS <- mea_na(data_meta$alt[which(data_meta$category == "low")])
 
   points(cyc_HS_me, ele_HS, pch = 24, cex = 1.4, col = col_HS, bg = "white")
   points(cyc_MS_me, ele_MS, pch = 24, cex = 1.4, col = col_MS, bg = "white")
