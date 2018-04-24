@@ -1,10 +1,10 @@
 #Plot: Elevations for map
 
-base_dir <- "u:/RhineFlow/Elevation/Data/"
+base_dir <- "u:/RhineFlow/Elevation/"
 
 stationMeta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep=",", header=T)
 
-pdf(paste0(baseDir,"mapElev.pdf"), width=3 , height=1.8)
+pdf(paste0(base_dir,"mapElev.pdf"), width=3 , height=1.8)
 
 eles <- stationMeta[length(stationMeta$alt):1, c(3,6)]
 

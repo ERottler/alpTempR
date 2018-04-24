@@ -15,7 +15,7 @@
 #' @export
 
 moving_analys <- function(dates, values, start_year, end_year, window_width,
-                          cover_thresh, method_analys){
+                          cover_thresh, method_analys, weather_type = 1){
 
   input_data <- data.frame(dates = dates, values = values)
 
@@ -96,6 +96,30 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
     mov_res <- apply(data_day[,-1], 2, f_snow_likelihood)
   }
 
+  if(method_analys == "weather_likelihood"){
+    #Data no moving average before
+    #Order data by day
+    data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+    colnames(data_day)=c("year", days)
+    data_day[, 1] <- start_year:end_year
+
+    for(i in 0:(length(start_year:end_year)-1)) {
+
+      data_day[i+1, 2:366] <- input_data$values[(i*365+1):((i+1)*365)]
+
+    }
+
+    f_weather_likelihood <- function(data_in){
+      if(length(which(is.na(data_in))) / length(data_in) > (1-cover_thresh)){
+        weather_lik <-  NA
+      }else{
+        weather_lik <-sum(ifelse(data_in == weather_type, 1, 0), na.rm=T) / (length(data_in)-length(which(is.na(data_in))))}
+      return(weather_lik)
+    }
+
+    mov_res <- apply(data_day[,-1], 2, f_weather_likelihood)
+  }
+
   if(method_analys == "snow_window_likeli_sens_slope"){
     #Snow yes or no
     snow_thres <- 0 #threshold for snow cover yes or not
@@ -142,7 +166,50 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
 
     }
 
+  if(method_analys == "weather_type_window_likeli_sens_slope"){
+    #Selected weather type: Yes (1) or No (0)
+    f_weatherYN <- function(data_in){ifelse(data_in == weather_type, 1, 0)}
 
+    input_data$values <- sapply(input_data$values, f_weatherYN)
+
+    #Apply moving average
+    input_data$ma <- rollapply(data = input_data$values, width = window_width,
+                               FUN = mea_na_thres, align = "center", fill = NA)
+
+    #Order data by day
+    data_day = matrix(NA, nrow=length(start_year:end_year), ncol = 366)
+    colnames(data_day)=c("year", days)
+    data_day[, 1] <- start_year:end_year
+
+    for(i in 0:(length(start_year:end_year) - 1)) {
+      data_day[i + 1, 2:366] <- input_data$ma[(i * 365 + 1):((i + 1 )* 365)]
+    }
+
+    #Calculate trends of window likelihood
+    mov_res <- apply(data_day[, -1], 2, f_sens_slope)
+
+    #When likelihood always (or only one value different from) 0 / 1 no trend
+    #calculated (NA), but trend is 0
+
+    for(i in 1:365){
+
+      #if trend magnitude calculated
+      if((length(which(is.na(data_day[, i+1]))) / nrow(data_day)) < (1 - cover_thresh)){
+
+        if(length(which(data_day[, i+1] == 1)) >=
+           ((nrow(data_day) - 2) - length(which(is.na(data_day[, i+1]))))){
+          mov_res[i] <- 0
+        }
+
+        if(length(which(data_day[, i+1] == 0)) >=
+           ((nrow(data_day) - 2) - length(which(is.na(data_day[, i+1]))))){
+          mov_res[i] <- 0
+        }
+      }
+    }
+
+
+  }
 
 
 

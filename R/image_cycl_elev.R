@@ -21,9 +21,9 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
   #Order data by altitude; add stations that are not in data file
   data_in <- order_add_stat(data_in, meta_stat = stat_meta)
 
-  #Position of x-axis ticks and labels
-  x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,365)-14
+  #Positions ticks and labels for x-axis
   x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
+  x_axis_tic <- c(   46,74,105,135,166,196,227,258,288,319,349)-15
 
   y <- 1:ncol(data_in)
   x <- 1:365
@@ -52,7 +52,7 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
   mtext("MS", 2, 0.1, adj = pos_ylab_lal[2], cex = 0.7)
   mtext("HS", 2, 0.1, adj = pos_ylab_lal[3], cex = 0.7)
 
-  axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+  axis(1, at = x_axis_tic, c("","","","","","","","","","",""), tick = TRUE,
        col = "black", col.axis = "black", tck = -0.03)#plot ticks
   axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
        col="black", col.axis="black", mgp=c(3, 0.3, 0))#plot labels

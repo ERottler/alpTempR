@@ -5,7 +5,7 @@
 \title{Moving average data analysis.}
 \usage{
 moving_analys(dates, values, start_year, end_year, window_width, cover_thresh,
-  method_analys)
+  method_analys, weather_type = 1)
 }
 \arguments{
 \item{dates}{...}

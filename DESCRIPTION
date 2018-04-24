@@ -2,11 +2,10 @@ Package: alptempr
 Type: Package
 Title: Statistical analysis of alpine climatological data
 Version: 0.1.0
-Authors@R: person("Erwin", "Rottler", email = "rottler@protonmail.de",
+Authors@R: person("Erwin", "Rottler", email = "rottler@protonmail.com",
                   role = c("aut", "cre"))
-Description: Statistical analysis of climatological data with focus on elevation
-    dependency of alpine temperature trends.
-License: What license is it under?
+Description: R package for analysis of alpine climatological data using moving average trend statistics.
+License: GPL-3
 Encoding: UTF-8
 LazyData: true
 RoxygenNote: 6.0.1

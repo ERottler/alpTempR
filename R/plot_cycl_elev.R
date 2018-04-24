@@ -88,7 +88,7 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
 
   #Positions ticks and labels for x-axis
   x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
-  x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349)-14
+  x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
 
   #Plot: Yearly cycle
   par(mar = margins_1)
@@ -129,7 +129,7 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   box(lwd = 1)
   mtext(main_text, side = 3, line = 1, padj = 1, at = 385, cex = 1)
 
-  axis(1, at = x_axis_tic, c("","","","","","","","","","","",""), tick = TRUE,
+  axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
        col="black", col.axis="black", tck=-0.04)#plot ticks
   axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
        col = "black", col.axis = "black", mgp = c(3, 0.3, 0))

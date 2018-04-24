@@ -4,6 +4,8 @@
 
 ###
 
+Sys.time()
+
 library("alptempr")
 library("zoo")
 library("modifiedmk")
@@ -157,8 +159,8 @@ stats_data <- unique(c(colnames(tem0_sl),colnames(temx_sl),colnames(temx_sl),
                        colnames(snow_sl),colnames(clou_sl),colnames(radi_sl),
                        colnames(suns_sl),colnames(ahum_sl),colnames(airp_sl)))
 
-statsData[which(!statsData %in% stationMeta$stn)]#station in data that are not in meta data
-stationMeta$stn[which(!stationMeta$stn %in% statsData)]#stations in meta data that are not in data
+stats_data[which(!stats_data %in% stat_meta$stn)]#station in data that are not in meta data
+stat_meta$stn[which(!stat_meta$stn %in% stats_data)]#stations in meta data that are not in data
 
 #Get groups of stations
 st_all <- stat_meta$stn
@@ -200,7 +202,168 @@ for(i in 1:length(stat_IDs)){
 }
 
 
+#Weather type classification
+
+stat_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order58612/order_58612_data.txt"),
+                        sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+stat_data$time <- as.POSIXct(strptime(stat_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_stat <- data.frame(date = full_date,
+                        value = with(stat_data, stat_data$wkcap1d0[match(full_date, time)]))
+
+wt_1 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 1)
+
+wl_1 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 1)
+
+wt_2 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 2)
+
+wl_2 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 2)
+
+wt_3 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 3)
+
+wl_3 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 3)
+
+wt_4 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 4)
+
+wl_4 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 4)
+
+wt_5 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 5)
+
+wl_5 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 5)
+
+wt_6 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 6)
+
+wl_6 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 6)
+
+wt_7 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 7)
+
+wl_7 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 7)
+
+wt_8 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 8)
+
+wl_8 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 8)
+
+wt_9 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = start_year,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                      weather_type = 9)
+
+wl_9 <- moving_analys(dates = data_stat$date, values = data_stat$value, start_year = 1981,
+                      end_year = end_year, window_width = window_width,
+                      cover_thresh= cover_thres, method_analys = "weather_likelihood",
+                      weather_type = 9)
+
+wl_data <- rbind(wl_5, #High Pressure over the Alps
+                 wl_8, #High Pressure over Central Europe
+                 wl_9, #Westerly flow over Southern Europe, cyclonic
+                 wl_2, #West-SouthWest, cyclonic, flat pressure
+                 wl_7, #West-SouthWest, cyclonic
+                 wl_4, #East, indifferent
+                 wl_1, #NorthEast, indifferent
+                 wl_3, #Westerly flow over Northern Europe
+                 wl_6  #North, cyclonic
+                 )*100 #Frequency in %
+
+wt_data <- rbind(wt_5, #High Pressure over the Alps
+                 wt_8, #High Pressure over Central Europe
+                 wt_9, #Westerly flow over Southern Europe, cyclonic
+                 wt_2, #West-SouthWest, cyclonic, flat pressure
+                 wt_7, #West-SouthWest, cyclonic
+                 wt_4, #East, indifferent
+                 wt_1, #NorthEast, indifferent
+                 wt_3, #Westerly flow over Northern Europe
+                 wt_6  #North, cyclonic
+                 )
+
+#Smooth frequency values using loess
+wl_data[1,] <- loess_NA_restore(wl_data[1, ])
+wl_data[2,] <- loess_NA_restore(wl_data[2, ])
+wl_data[3,] <- loess_NA_restore(wl_data[3, ])
+wl_data[4,] <- loess_NA_restore(wl_data[4, ])
+wl_data[5,] <- loess_NA_restore(wl_data[5, ])
+wl_data[6,] <- loess_NA_restore(wl_data[6, ])
+wl_data[7,] <- loess_NA_restore(wl_data[7, ])
+wl_data[8,] <- loess_NA_restore(wl_data[8, ])
+wl_data[9,] <- loess_NA_restore(wl_data[9, ])
+
 Sys.time()
 
+data_avail <- rep("", 94)
+data_avail[which(stat_meta$stn %in% colnames(tem0_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(tem0_sl))], "T")
 
+data_avail[which(stat_meta$stn %in% colnames(radi_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(radi_sl))], "-R")
 
+data_avail[which(stat_meta$stn %in% colnames(suns_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(suns_sl))], "-S")
+
+data_avail[which(stat_meta$stn %in% colnames(clou_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(clou_sl))], "-C")
+
+data_avail[which(stat_meta$stn %in% colnames(ahum_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(ahum_sl))], "-H")
+
+data_avail[which(stat_meta$stn %in% colnames(airp_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(airp_sl))], "-P")
+
+data_avail[which(stat_meta$stn %in% colnames(snow_sl))] <-
+  paste0(data_avail[which(stat_meta$stn %in% colnames(snow_sl))], "-D")
+
+cbind(as.character(stat_meta$name), data_avail)
