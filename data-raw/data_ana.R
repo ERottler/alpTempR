@@ -344,7 +344,7 @@ wl_data[9,] <- loess_NA_restore(wl_data[9, ])
 
 Sys.time()
 
-data_avail <- rep("", 94)
+data_avail <- rep("", 93)
 data_avail[which(stat_meta$stn %in% colnames(tem0_sl))] <-
   paste0(data_avail[which(stat_meta$stn %in% colnames(tem0_sl))], "T")
 
@@ -367,3 +367,8 @@ data_avail[which(stat_meta$stn %in% colnames(snow_sl))] <-
   paste0(data_avail[which(stat_meta$stn %in% colnames(snow_sl))], "-D")
 
 cbind(as.character(stat_meta$name), data_avail)
+
+
+# rm(ahum_data, airp_data, clou_data, data_stat, out_data, radi_data,
+#    snow_data, stat_data, suns_data, tem0_data, temn_data, temx_data, data_avail,
+#    base_dir)

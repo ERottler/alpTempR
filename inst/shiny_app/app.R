@@ -1,12 +1,12 @@
 ###
 
-#Interactive Web App: Temperature changes Swiss Alps
+#R-code
+#Interactive web app to explore Elevation-dependent warming in the Swiss Alps
+#Erwin Rottler 2017/2018
 
 ###
 
-
 library("devtools")
-#install_github("ERottler/alptempr")
 library("alptempr")
 library("shiny")
 library("shinythemes")
@@ -18,9 +18,10 @@ library("zyp")
 baseDir    <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
 setwd(baseDir)
 
-load(paste0(baseDir,"data/data_ana_30.RData"))
+load(paste0(baseDir,"data/results_30DMA.RData"))
 
 #leaflat map----
+pal <- colorFactor(palette = c("blue", "red", "black"), domain = stat_meta$category)
 map <- leaflet(stat_meta) %>%
   # Base groups
   #addTiles(group = "OSM (default)") %>%
@@ -30,7 +31,7 @@ map <- leaflet(stat_meta) %>%
   addCircleMarkers(~lon, ~lat, label = as.character(stat_meta$name),
                    popup = ~paste0(as.character(name)," (",stat_meta$stn,"): ",alt," m"),
                    labelOptions = labelOptions(noHide = T, textOnly = TRUE, direction = "bottom"),
-                   stroke = F, group = "Stations", col="red") %>%
+                   stroke = F, group = "Stations", col = pal(stat_meta$category), fillOpacity = 0.5) %>%
 
   # Layers control
   addLayersControl(
@@ -46,8 +47,9 @@ ui <- fluidPage(theme = shinytheme("superhero"),
         hr(),
         tags$h4("Interactive web app to explore:"),
         hr(),
-        tags$h3("Temperature changes Swiss Alps 1981-2017:
+        tags$h3("Elevation-dependet temperature changes in the Swiss Alps 1981-2017:
                  features, forcings and feedbacks"),
+        tags$h5("Erwin Rottler, Christoph Kormann, Till Franke and Axel Bronstert"),
         hr(),
 
         wellPanel(
@@ -58,7 +60,7 @@ ui <- fluidPage(theme = shinytheme("superhero"),
             selectInput(inputId = "variable_1",
             label   = NULL,
             choices = c("Temperature", "Global radiation","Sunshine duration",
-                        "Clouds", "Absolute humidity", "Snow depth"),
+                        "Clouds", "Absolute humidity", "Snow depth", "Weather type classification"),
             selected = "Temperature")
           ),#conditional Panel
 
@@ -101,10 +103,13 @@ ui <- fluidPage(theme = shinytheme("superhero"),
         wellPanel(leafletOutput("map", height=220)),
 
         wellPanel(
-          tags$p("+++Under construction+++"),
           tags$p("If you have questions, suggestions or ideas you want to share,
-                   please do not hesitate to contact us:"),
-          tags$address("rottler(at)uni-potsdam.de", style="color:darkblue")
+                   please do not hesitate to contact us: rottler(at)uni-potsdam.de"),
+          tags$p("We thank the national weather and climate service of Switzerland
+                  (MeteoSwiss) for providing climatological data. This research
+                  was funded by Deutsche Forschungsgemeinschaft (DFG) within the
+                  graduate research training group NatRiskChange (GRK 2043/1)
+                  at the University of Potsdam.")
         )
 
       )#fluidpage
@@ -122,13 +127,9 @@ server <- function(input, output) {
     isolate({
 
       #Accoring to which window width for moving average, data loaded
-      if(input$window_1 == "30"){load(paste0(baseDir,"data/data_ana_30.RData"))}
-      if(input$window_1 == "60"){load(paste0(baseDir,"data/data_ana_60.RData"))}
-      if(input$window_1 == "90"){load(paste0(baseDir,"data/data_ana_90.RData"))}
-
-      # if(input$window_1 == "30"){load(paste0("/srv/shiny-server/AlpTempApp/","data/data_ana_30.RData"))}
-      # if(input$window_1 == "60"){load(paste0("/srv/shiny-server/AlpTempApp/","data/data_ana_60.RData"))}
-      # if(input$window_1 == "90"){load(paste0("/srv/shiny-server/AlpTempApp/","data/data_ana_90.RData"))}
+      if(input$window_1 == "30"){load(paste0(baseDir,"data/results_30DMA.RData"))}
+      if(input$window_1 == "60"){load(paste0(baseDir,"data/results_60DMA.RData"))}
+      if(input$window_1 == "90"){load(paste0(baseDir,"data/results_90DMA.RData"))}
 
       #Calculations for image plot
       zero_iso <- iso_days(data_in = tem0_me, isotherm =  0, meta_stat = stat_meta)
@@ -201,13 +202,64 @@ server <- function(input, output) {
                          smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T)
         }
 
-        if(input$variable_1 == "Air pressure"){
-          plot_cycl_elev(data_in = airp_me, data_mk = airp_mk, data_in_me = airp_me_an,
-                         data_meta = stat_meta, main_text = "g) Air pressure [hPa] ",
-                         margins_1 = c(1.4,1.8,1.8,0.2), margins_2 = c(1.4,0.2,1.8,3.5),
-                         no_col = T, show_mk = F, aggr_cat_mean = F, with_hom_dat = F,
-                         smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T)
-        }
+           if(input$variable_1 == "Weather type classification"){
+             par(oma = c(0,0,0,0))
+             par(family = "serif")
+             par(mfrow = c(1,2))
+
+
+             blue_1  <- "skyblue2"
+             blue_2  <- "blue2"
+             blue_3  <- rgb(0, 0, 120, maxColorValue=255)
+             green_1 <- "darkseagreen3"
+             green_2 <- "darkgreen"
+
+             my_cols <- c("orange2", "gold", blue_1, blue_2, blue_3, "grey75",
+                          "grey42", green_1, green_2)
+             #Plot1: Frequencies
+             par(mar = c(1, 2, 1, 0.2))
+
+             barplot(as.matrix(wl_data), col = my_cols, axisnames = F, border = NA, space = 0,
+                     xaxs = "i", yaxs = "i", ylim = c(0, 100), axes = F)
+
+             x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
+             x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
+
+             axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+                  col="black", col.axis="black", tck=-0.04)#plot ticks
+             axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+                  col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+             axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
+             mtext("Frequency [%]", side = 2, line = 1.3, padj = 1, cex = 0.8)
+             box()
+
+             mtext("Weather type classifications", side = 3, line = 0.6, padj = 1, at = 385, cex = 1)
+
+             #Plot 2: Window trends
+             par(mar = c(1, 0.2, 1, 2))
+
+             plot(loess_NA_restore(wt_5), type="n", axes = F, ylab = "", xlab = "", ylim = c(-0.45, 0.45))
+             lines(loess_NA_restore(wt_data[1, ])*100, col = my_cols[1], lwd = 2)#High Pressure over the Alps
+             lines(loess_NA_restore(wt_data[2, ])*100, col = my_cols[2], lwd = 2)#High Pressure over Central Europe
+             lines(loess_NA_restore(wt_data[3, ])*100, col = my_cols[3], lwd = 2)#Westerly flow over Southern Europe, cyclonic
+             lines(loess_NA_restore(wt_data[4, ])*100, col = my_cols[4], lwd = 2)#West-SouthWest, cyclonic, flat pressure
+             lines(loess_NA_restore(wt_data[5, ])*100, col = my_cols[5], lwd = 2)#West-SouthWest, cyclonic
+             lines(loess_NA_restore(wt_data[6, ])*100, col = my_cols[6], lwd = 2)#East, indifferent
+             lines(loess_NA_restore(wt_data[7, ])*100, col = my_cols[7], lwd = 2)#NorthEast, indifferent
+             lines(loess_NA_restore(wt_data[8, ])*100, col = my_cols[8], lwd = 2)#Westerly flow over Northern Europe
+             lines(loess_NA_restore(wt_data[9, ])*100, col = my_cols[9], lwd = 2)#North, cyclonic
+
+             axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+                  col="black", col.axis="black", tck=-0.04)#plot ticks
+             axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+                  col = "black", col.axis = "black", mgp = c(3, 0, 0), cex.axis = 0.7)
+             axis(4, mgp = c(3, 0.0, 0), tck=-0.04, cex.axis = 0.7)
+             abline(h = 0, lty = "dashed", lwd = 0.9)
+             abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+             box()
+
+             mtext("Trend window prob. [%/dec]", side = 4, line = 0.5, padj = 1, cex = 0.8)
+           }
       }
 
          if(input$tool_1 == "Linear trend: Sen`s slope"){
