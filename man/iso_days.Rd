@@ -7,26 +7,19 @@
 iso_days(data_in, isotherm = 0, meta_stat, smoo_val = 0.75)
 }
 \arguments{
-\item{data_in}{...}
+\item{data_in}{Input temperature data after moving average statistics to get
+mean yearly cycles of temperature of stations.}
 
-\item{data_mk}{...}
+\item{isotherm}{What isotherm to calculate (e.g. 0 for 0°C isotherm)}
 
-\item{data_in_me}{...}
+\item{meta_stat}{Station meta information.}
 
-\item{data_meta}{...}
-
-\item{window_width}{...}
-
-\item{cover_thresh}{...}
-
-\item{method_analys}{...}
+\item{smoo_val}{Smooth values using LOESS (f = smoo_val)}
 }
 \value{
-...
+Days of the year which closest to selected isotherm.
 }
 \description{
-...
-}
-\examples{
-pres2ahum(vapor_pres = 5.5, temp = 20)
+Calculation of temperature isotherms for image plot (see image_cycle_elev())
+based on temperature data (usually after applying moving average filter).
 }

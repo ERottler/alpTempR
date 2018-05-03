@@ -8,26 +8,35 @@ moving_analys(dates, values, start_year, end_year, window_width, cover_thresh,
   method_analys, weather_type = 1)
 }
 \arguments{
-\item{dates}{...}
+\item{dates}{Input date vector.}
 
-\item{values}{...}
+\item{values}{Input values of time series}
 
-\item{start_year}{...}
+\item{start_year}{Start year of time frame to be analyzed}
 
-\item{end_year}{...}
+\item{end_year}{End year of time frame to be analyzed}
 
-\item{window_width}{...}
+\item{window_width}{Window width of moving averages}
 
-\item{cover_thresh}{...}
+\item{cover_thresh}{Cover threshold when calculation conducted}
 
-\item{method_analys}{...}
+\item{method_analys}{Select analytical method ("sens_slope", "mann_kendall", "mean",
+"snow_likelihood", "weather_likelihood", "snow_window_likeli_sens_slope",
+""weather_type_window_likeli_sens_slope" or "snow_window_likeli_mk")}
 }
 \value{
-...
+Yearly cycle of e.g. trend magnitude or mean values
 }
 \description{
-...
+Function for moving average trend statistics.
 }
 \examples{
-pres2ahum(vapor_pres = 5.5, temp = 20)
+temp_slo <- moving_analys(dates = temperature$date, values= temperature[, 2],
+                          start_year = 1985,
+                          end_year = 2015,
+                          window_width = 30,
+                          cover_thres = 0.9,
+                          method_analys = "sens_slope")
+
+plot(temp_slo, type="l", ylab = "Trend mangitude [°C/year]", xlab="Day  of the year")
 }

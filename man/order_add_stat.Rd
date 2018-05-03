@@ -7,16 +7,14 @@
 order_add_stat(data_in, meta_stat)
 }
 \arguments{
-\item{data_in}{...}
+\item{data_in}{Data frame after moving average trends analysis.}
 
-\item{meta_stat}{...}
+\item{meta_stat}{Stations meta information.}
 }
 \value{
-...
+Data frame with columns ordered according to station elevation.
 }
 \description{
-...
-}
-\examples{
-
+Orders columns according to elevatoin of stations and adds missing stations for
+which no data available.
 }

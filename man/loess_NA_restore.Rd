@@ -7,18 +7,15 @@
 loess_NA_restore(data_in, smoo_val = 0.2, NA_restore = TRUE)
 }
 \arguments{
-\item{data_in}{...}
+\item{data_in}{Input vector to be smoothed}
 
-\item{smoo_val}{...}
+\item{smoo_val}{Smoothing value.}
 
-\item{NA_restore}{...}
+\item{NA_restore}{Restore NAs yes or no (T or F)}
 }
 \value{
-...
+Smoothed vector.
 }
 \description{
-...
-}
-\examples{
-pres2ahum(vapor_pres = 5.5, temp = 20)
+Local Polynomial Regression Fitting with NA-restoring.
 }

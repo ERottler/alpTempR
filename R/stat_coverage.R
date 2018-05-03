@@ -1,13 +1,10 @@
 #' Remove columns with only NA.
 #'
-#' Function to determine sum automatically handling NAs. Calculates
-#' sum disregarding NAs, except when all values are NA.
+#' Remove columns in data frame which onla have NA-values
 #'
-#' @param data_in data frame with numeric columns...
-#' @return ...
-#' @examples
-#' sum_na(c(2 ,3, NA))
-#' sum_na(c(NA, NA, NA))
+#' @param data_in Input data frame with numerich columns.
+#' @return Data frame without only-NA-columns
+
 #' @export
 stat_coverage <- function(data_in){
   data_cover <- data_in

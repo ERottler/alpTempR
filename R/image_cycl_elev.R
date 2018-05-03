@@ -1,15 +1,20 @@
 #' Image plots yearly cycles of trend magnitudes.
 #'
-#' ...
+#' Image plot of results of moving average analysis. Stations ordered accoring to
+#' elevation along y-axis.
 #'
-#' @param data_in ...
-#' @param data_mk ...
-#' @param data_in_me ...
-#' @param data_meta ...
-#' @param window_width ...
-#' @param cover_thresh ...
-#' @param method_analys ...
-#' @return ...
+#' @param data_in Data frame with results of moving average analysis.
+#' @param data_meta Meta data file of stations.
+#' @param colors Vector of colors for z-value.
+#' @param breaks Color breaks in z-range.
+#' @param main Plot title.
+#' @param unit Unit of input data.
+#' @param margins_1 Margins of left plot panel.
+#' @param margins_2 Margins of right plot panel.
+#' @param isotherm_data Data frame with isotherm data.
+#' @param add_isotherms Plot isotherms yes or no (T or F)
+#' @param pos_iso_text Position is text of isotherms in plot.
+#' @param pos_ylab_lal Posistion  y-labels (HS, MS,LS)
 #' @examples
 #'
 #' @export

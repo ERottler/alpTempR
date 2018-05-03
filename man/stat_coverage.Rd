@@ -7,16 +7,11 @@
 stat_coverage(data_in)
 }
 \arguments{
-\item{data_in}{data frame with numeric columns...}
+\item{data_in}{Input data frame with numerich columns.}
 }
 \value{
-...
+Data frame without only-NA-columns
 }
 \description{
-Function to determine sum automatically handling NAs. Calculates
-sum disregarding NAs, except when all values are NA.
-}
-\examples{
-sum_na(c(2 ,3, NA))
-sum_na(c(NA, NA, NA))
+Remove columns in data frame which onla have NA-values
 }

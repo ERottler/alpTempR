@@ -1,13 +1,11 @@
 #' Local Polynomial Regression Fitting.
 #'
-#' ...
+#' Local Polynomial Regression Fitting with NA-restoring.
 #'
-#' @param data_in ...
-#' @param smoo_val ...
-#' @param NA_restore ...
-#' @return ...
-#' @examples
-#' pres2ahum(vapor_pres = 5.5, temp = 20)
+#' @param data_in Input vector to be smoothed
+#' @param smoo_val Smoothing value.
+#' @param NA_restore Restore NAs yes or no (T or F)
+#' @return Smoothed vector.
 #' @export
 loess_NA_restore <- function(data_in, smoo_val = 0.2, NA_restore = TRUE){
 

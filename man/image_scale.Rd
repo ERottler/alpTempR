@@ -2,32 +2,29 @@
 % Please edit documentation in R/image_scale.R
 \name{image_scale}
 \alias{image_scale}
-\title{Scale for  image plot.}
+\title{Color scale for  image plot.}
 \usage{
 image_scale(z, zlim, col = heat.colors(12), breaks, horiz = TRUE,
   ylim = NULL, xlim = NULL, ...)
 }
 \arguments{
-\item{z}{...}
+\item{z}{Input data matrix. Results of moving average analysis.}
 
-\item{zlim}{...}
+\item{zlim}{Maximum and minimum values.}
 
-\item{col}{...}
+\item{col}{Vector of colors for z-value.}
 
-\item{breaks}{...}
+\item{breaks}{Color breaks in z-range.}
 
-\item{horiz}{...}
+\item{horiz}{Orientation of image scale}
 
 \item{ylim}{...}
 
 \item{xlim}{...}
 }
 \value{
-...
+Scale for image plot.
 }
 \description{
-...
-}
-\examples{
-
+Plot color scale of image plot.
 }

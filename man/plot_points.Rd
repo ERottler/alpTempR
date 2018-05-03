@@ -2,31 +2,23 @@
 % Please edit documentation in R/plot_points.R
 \name{plot_points}
 \alias{plot_points}
-\title{Plot points.}
+\title{Plot points representing annual averages.}
 \usage{
 plot_points(data_in, data_meta, ID, no_col = FALSE, is_hom = FALSE)
 }
 \arguments{
-\item{dates}{...}
+\item{data_in}{Annual aveage values of moving average results.}
 
-\item{values}{...}
+\item{data_meta}{Station meta data.}
 
-\item{start_year}{...}
+\item{no_col}{Point color depending on elevation (FALSE) or all grey (TRUE)}
 
-\item{end_year}{...}
-
-\item{window_width}{...}
-
-\item{cover_thresh}{...}
-
-\item{method_analys}{...}
+\item{is_hom}{If TRUE, distinction between homogenized and quality-checked data with different point type.}
 }
 \value{
-...
+Point in plot.
 }
 \description{
-...
-}
-\examples{
-pres2ahum(vapor_pres = 5.5, temp = 20)
+Plot points with color depending of elevation category of station and point type
+depending on quality level of time series (see plot_cycle_elev())
 }

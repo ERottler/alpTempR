@@ -1,12 +1,11 @@
 #' Order data set by altitude. Add missing stations.
 #'
-#' ...
+#' Orders columns according to elevatoin of stations and adds missing stations for
+#' which no data available.
 #'
-#' @param data_in ...
-#' @param meta_stat ...
-#' @return ...
-#' @examples
-#'
+#' @param data_in Data frame after moving average trends analysis.
+#' @param meta_stat Stations meta information.
+#' @return Data frame with columns ordered according to station elevation.
 #' @export
 order_add_stat <- function(data_in, meta_stat){
 

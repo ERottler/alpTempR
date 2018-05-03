@@ -10,26 +10,39 @@ plot_cycl_elev(data_in, data_mk, data_in_me, data_meta, main_text = "",
   smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T)
 }
 \arguments{
-\item{data_in}{...}
+\item{data_in}{Input data frame holding results of moving average analysis.}
 
-\item{data_mk}{...}
+\item{data_mk}{Input analysis with results of Mann-Kendall trend test.}
 
-\item{data_in_me}{...}
+\item{data_in_me}{Data frame with annual average values of stations.}
 
-\item{data_meta}{...}
+\item{data_meta}{Station meta data.}
 
-\item{window_width}{...}
+\item{main_text}{Plot title}
 
-\item{cover_thresh}{...}
+\item{margins_1}{Figure margins of left plot panel}
 
-\item{method_analys}{...}
+\item{margins_2}{Figure margins of right plot panel.}
+
+\item{no_col}{Display elevation categories with different colors (T or F)}
+
+\item{aggr_cat_mean}{If TRUE, uasnge mean average instead of median for calculation af category averages}
+
+\item{with_hom_dat}{Display stations with homogenized time series (T or F)}
+
+\item{smooth_val}{Smoothing value for LOESS.}
+
+\item{mk_sig_level}{Significance level alpha.}
+
+\item{add_st_num}{Add number of stations of each category top right (T or F)}
+
+\item{snow_mk}{Snow days with significant trends with yellow dots (T or F)}
 }
 \value{
-...
+Plot with yearly cycles (lines; left panel) of moving average analysis results and
+annual averages (right panel)
 }
 \description{
-...
-}
-\examples{
-pres2ahum(vapor_pres = 5.5, temp = 20)
+Plot yearly cycles of moving average analysis and annual averages to visualize
+elevation dependency for multiple stations of different elevation categories.
 }

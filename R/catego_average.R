@@ -1,14 +1,13 @@
 
-#' Mean values of categories.
+#' Mean values of elevation categories.
 #'
 #' Function to get mean values of elevatio categories.
 #'
-#' @param data_in ....
-#' @param stat_meta ....
-#' @return ....
+#' @param data_in Input data frame; Station data sorted by column
+#' @param stat_meta Table containing meta information on investigated stations
+#' @return Mean value of elevation categores (low, middle, high)
 #' @examples
-#' mea_na(c(2 ,3, NA))
-#' mea_na(c(NA, NA, NA))
+#' catego_average(temperature[, -1], station_meta)
 #' @export
 catego_average <- function(data_in, data_meta){
 

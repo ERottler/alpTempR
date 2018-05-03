@@ -10,25 +10,33 @@ image_cycle_elev(data_in, stat_meta, colors, breaks, main = "", unit = "",
   pos_ylab_lal = c(0.27, 0.71, 0.985))
 }
 \arguments{
-\item{data_in}{...}
+\item{data_in}{Data frame with results of moving average analysis.}
 
-\item{data_mk}{...}
+\item{colors}{Vector of colors for z-value.}
 
-\item{data_in_me}{...}
+\item{breaks}{Color breaks in z-range.}
 
-\item{data_meta}{...}
+\item{main}{Plot title.}
 
-\item{window_width}{...}
+\item{unit}{Unit of input data.}
 
-\item{cover_thresh}{...}
+\item{margins_1}{Margins of left plot panel.}
 
-\item{method_analys}{...}
-}
-\value{
-...
+\item{margins_2}{Margins of right plot panel.}
+
+\item{isotherm_data}{Data frame with isotherm data.}
+
+\item{add_isotherms}{Plot isotherms yes or no (T or F)}
+
+\item{pos_iso_text}{Position is text of isotherms in plot.}
+
+\item{pos_ylab_lal}{Posistion  y-labels (HS, MS,LS)}
+
+\item{data_meta}{Meta data file of stations.}
 }
 \description{
-...
+Image plot of results of moving average analysis. Stations ordered accoring to
+elevation along y-axis.
 }
 \examples{
 

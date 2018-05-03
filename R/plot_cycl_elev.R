@@ -1,17 +1,24 @@
 #' Plot yearly cycle and elevation dependency.
 #'
-#' ...
+#' Plot yearly cycles of moving average analysis and annual averages to visualize
+#' elevation dependency for multiple stations of different elevation categories.
 #'
-#' @param data_in ...
-#' @param data_mk ...
-#' @param data_in_me ...
-#' @param data_meta ...
-#' @param window_width ...
-#' @param cover_thresh ...
-#' @param method_analys ...
-#' @return ...
-#' @examples
-#' pres2ahum(vapor_pres = 5.5, temp = 20)
+#' @param data_in Input data frame holding results of moving average analysis.
+#' @param data_mk Input analysis with results of Mann-Kendall trend test.
+#' @param data_in_me Data frame with annual average values of stations.
+#' @param data_meta Station meta data.
+#' @param main_text Plot title
+#' @param margins_1 Figure margins of left plot panel
+#' @param margins_2 Figure margins of right plot panel.
+#' @param no_col Display elevation categories with different colors (T or F)
+#' @param snow_mk Snow days with significant trends with yellow dots (T or F)
+#' @param aggr_cat_mean If TRUE, uasnge mean average instead of median for calculation af category averages
+#' @param with_hom_dat Display stations with homogenized time series (T or F)
+#' @param smooth_val Smoothing value for LOESS.
+#' @param mk_sig_level Significance level alpha.
+#' @param add_st_num Add number of stations of each category top right (T or F)
+#' @return Plot with yearly cycles (lines; left panel) of moving average analysis results and
+#' annual averages (right panel)
 #' @export
 plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = "",
                            margins_1 = c(1.4,1.8,1.8,0.2), margins_2 = c(1.4,0.2,1.8,3.5),

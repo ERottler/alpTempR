@@ -2,22 +2,21 @@
 % Please edit documentation in R/catego_average.R
 \name{catego_average}
 \alias{catego_average}
-\title{Mean values of categories.}
+\title{Mean values of elevation categories.}
 \usage{
 catego_average(data_in, data_meta)
 }
 \arguments{
-\item{data_in}{....}
+\item{data_in}{Input data frame; Station data sorted by column}
 
-\item{stat_meta}{....}
+\item{stat_meta}{Table containing meta information on investigated stations}
 }
 \value{
-....
+Mean value of elevation categores (low, middle, high)
 }
 \description{
 Function to get mean values of elevatio categories.
 }
 \examples{
-mea_na(c(2 ,3, NA))
-mea_na(c(NA, NA, NA))
+catego_average(temperature[, -1], station_meta)
 }

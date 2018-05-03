@@ -1,25 +1,17 @@
-#' MeteoSwiss Idaweb climate data preparation.
+#' MeteoSwiss IdaWeb climate data preparation.
 #'
 #' Preparation of raw climatological data obtained from national weather and
-#' climate service of Switzerland (MeteoSwiss) via Idaweb.
+#' climate service of Switzerland (MeteoSwiss) via IdaWeb. Download as csv of multiple
+#' parameters for multiple stations possible. Output as .RData and column for each station.
 #'
 #' @param param_code  Parameter code from climatological variable as downloaded
 #' from Idaweb (e.g. "tre200d0" or "gre000d0")
-#' @param order_dir ...
-#' @param out_dir ...
-#' @param start_day ...
-#' @param end_day ...
-#' @return The arithmetic mean of values in \code{x}.
-#' @examples
-#' mea_na(c(2 ,3, NA))
-#' mea_na(c(NA, NA, NA))
+#' @param order_dir Path to zip-folder containing raw data.
+#' @param out_dir Output location.
+#' @param start_day Start day of desired time frame (e.g. "1980-01-01")
+#' @param end_day Start day of desired time frame (e.g. "2015-12-31")
+#' @return Data frame saved as .RData.
 #' @export
-
-# param_code = "tre200d0"
-# order_dir = paste0(base_dir,"rawData/IDAweb/tmean")
-# out_dir = base_dir
-# start_day = "1981-01-01"
-# end_day = "2017-12-31"
 
 idaweb_data_prep <- function(param_code, order_dir, out_dir,
                              start_day="1981-01-01",

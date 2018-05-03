@@ -2,7 +2,7 @@
 % Please edit documentation in R/idaweb_data_prep.R
 \name{idaweb_data_prep}
 \alias{idaweb_data_prep}
-\title{MeteoSwiss Idaweb climate data preparation.}
+\title{MeteoSwiss IdaWeb climate data preparation.}
 \usage{
 idaweb_data_prep(param_code, order_dir, out_dir, start_day = "1981-01-01",
   end_day = "2017-12-31")
@@ -11,22 +11,19 @@ idaweb_data_prep(param_code, order_dir, out_dir, start_day = "1981-01-01",
 \item{param_code}{Parameter code from climatological variable as downloaded
 from Idaweb (e.g. "tre200d0" or "gre000d0")}
 
-\item{order_dir}{...}
+\item{order_dir}{Path to zip-folder containing raw data.}
 
-\item{out_dir}{...}
+\item{out_dir}{Output location.}
 
-\item{start_day}{...}
+\item{start_day}{Start day of desired time frame (e.g. "1980-01-01")}
 
-\item{end_day}{...}
+\item{end_day}{Start day of desired time frame (e.g. "2015-12-31")}
 }
 \value{
-The arithmetic mean of values in \code{x}.
+Data frame saved as .RData.
 }
 \description{
 Preparation of raw climatological data obtained from national weather and
-climate service of Switzerland (MeteoSwiss) via Idaweb.
-}
-\examples{
-mea_na(c(2 ,3, NA))
-mea_na(c(NA, NA, NA))
+climate service of Switzerland (MeteoSwiss) via IdaWeb. Download as csv of multiple
+parameters for multiple stations possible. Output as .RData and column for each station.
 }

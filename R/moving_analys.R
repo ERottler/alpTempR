@@ -1,17 +1,26 @@
 #' Moving average data analysis.
 #'
-#' ...
+#' Function for moving average trend statistics.
 #'
-#' @param dates ...
-#' @param values ...
-#' @param start_year ...
-#' @param end_year ...
-#' @param window_width ...
-#' @param cover_thresh ...
-#' @param method_analys ...
-#' @return ...
+#' @param dates Input date vector.
+#' @param values Input values of time series
+#' @param start_year Start year of time frame to be analyzed
+#' @param end_year End year of time frame to be analyzed
+#' @param window_width Window width of moving averages
+#' @param cover_thresh Cover threshold when calculation conducted
+#' @param method_analys Select analytical method ("sens_slope", "mann_kendall", "mean",
+#' "snow_likelihood", "weather_likelihood", "snow_window_likeli_sens_slope",
+#' ""weather_type_window_likeli_sens_slope" or "snow_window_likeli_mk")
+#' @return Yearly cycle of e.g. trend magnitude or mean values
 #' @examples
-#' pres2ahum(vapor_pres = 5.5, temp = 20)
+#' temp_slo <- moving_analys(dates = temperature$date, values= temperature[, 2],
+#'                           start_year = 1985,
+#'                           end_year = 2015,
+#'                           window_width = 30,
+#'                           cover_thres = 0.9,
+#'                           method_analys = "sens_slope")
+#'
+#' plot(temp_slo, type="l", ylab = "Trend mangitude [°C/year]", xlab="Day  of the year")
 #' @export
 
 moving_analys <- function(dates, values, start_year, end_year, window_width,
