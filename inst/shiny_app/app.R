@@ -15,7 +15,10 @@ library("zoo")
 library("RColorBrewer")
 library("zyp")
 
-baseDir    <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
+baseDir  <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
+countDir <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/data/"
+# baseDir  <- "/srv/shiny-server/AlpTempApp/"
+# countDir <- "/home/shiny/AlpTempApp/"
 setwd(baseDir)
 
 load(paste0(baseDir,"data/results_30DMA.RData"))
@@ -109,7 +112,8 @@ ui <- fluidPage(theme = shinytheme("superhero"),
                   (MeteoSwiss) for providing climatological data. This research
                   was funded by Deutsche Forschungsgemeinschaft (DFG) within the
                   graduate research training group NatRiskChange (GRK 2043/1)
-                  at the University of Potsdam.")
+                  at the University of Potsdam."),
+          tags$b(textOutput("counter"))
         )
 
       )#fluidpage
@@ -509,8 +513,30 @@ server <- function(input, output) {
   #Leaflet map
   output$map <- renderLeaflet({map})
 
+  #Plot output
   output$plot_elev <- renderPlot({f_plot_elev()})
 
+  #Count app viewings
+  output$counter <-
+    renderText({
+      if(!file.exists(paste0(countDir,"view_count.RData"))){
+        view_count <- 0
+        view_count_start <- Sys.Date()
+        viewings <- Sys.time()
+        save(view_count,       file = paste0(countDir, "view_count.RData"))
+        save(view_count_start, file = paste0(countDir, "view_count_start.RData"))
+        save(viewings, file = paste0(countDir, "viewings.RData"))
+      }else{
+        load(file = paste0(countDir, "view_count.RData"))
+        load(file = paste0(countDir, "view_count_start.RData"))
+        load(file = paste0(countDir, "viewings.RData"))
+        view_count <- view_count +1
+        viewings <- c(viewings, Sys.time())
+        save(view_count, file = paste0(countDir, "view_count.RData"))
+        save(viewings, file = paste0(countDir, "viewings.RData"))
+        paste0("Number of app views since ", view_count_start, " : ", view_count)
+      }
+    })
 }
 
 #Shiny app

@@ -284,16 +284,16 @@ mtext("Weather type classifications", side = 3, line = 0.6, padj = 1, at = 385, 
 #Plot 2: Window trends
 par(mar = c(1, 0.2, 1, 2))
 
-plot(loess_NA_restore(wt_5), type="n", axes = F, ylab = "", xlab = "", ylim = c(-0.45, 0.45))
-lines(loess_NA_restore(wt_data[1, ])*100, col = my_cols[1], lwd = 2)#High Pressure over the Alps
-lines(loess_NA_restore(wt_data[2, ])*100, col = my_cols[2], lwd = 2)#High Pressure over Central Europe
-lines(loess_NA_restore(wt_data[3, ])*100, col = my_cols[3], lwd = 2)#Westerly flow over Southern Europe, cyclonic
-lines(loess_NA_restore(wt_data[4, ])*100, col = my_cols[4], lwd = 2)#West-SouthWest, cyclonic, flat pressure
-lines(loess_NA_restore(wt_data[5, ])*100, col = my_cols[5], lwd = 2)#West-SouthWest, cyclonic
-lines(loess_NA_restore(wt_data[6, ])*100, col = my_cols[6], lwd = 2)#East, indifferent
-lines(loess_NA_restore(wt_data[7, ])*100, col = my_cols[7], lwd = 2)#NorthEast, indifferent
-lines(loess_NA_restore(wt_data[8, ])*100, col = my_cols[8], lwd = 2)#Westerly flow over Northern Europe
-lines(loess_NA_restore(wt_data[9, ])*100, col = my_cols[9], lwd = 2)#North, cyclonic
+plot(loess_NA_restore(wt_5), type="n", axes = F, ylab = "", xlab = "", ylim = c(-4.5, 4.5))
+lines(loess_NA_restore(wt_data[1, ]), col = my_cols[1], lwd = 2)#High Pressure over the Alps
+lines(loess_NA_restore(wt_data[2, ]), col = my_cols[2], lwd = 2)#High Pressure over Central Europe
+lines(loess_NA_restore(wt_data[3, ]), col = my_cols[3], lwd = 2)#Westerly flow over Southern Europe, cyclonic
+lines(loess_NA_restore(wt_data[4, ]), col = my_cols[4], lwd = 2)#West-SouthWest, cyclonic, flat pressure
+lines(loess_NA_restore(wt_data[5, ]), col = my_cols[5], lwd = 2)#West-SouthWest, cyclonic
+lines(loess_NA_restore(wt_data[6, ]), col = my_cols[6], lwd = 2)#East, indifferent
+lines(loess_NA_restore(wt_data[7, ]), col = my_cols[7], lwd = 2)#NorthEast, indifferent
+lines(loess_NA_restore(wt_data[8, ]), col = my_cols[8], lwd = 2)#Westerly flow over Northern Europe
+lines(loess_NA_restore(wt_data[9, ]), col = my_cols[9], lwd = 2)#North, cyclonic
 
 axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
      col="black", col.axis="black", tck=-0.04)#plot ticks

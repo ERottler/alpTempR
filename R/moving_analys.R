@@ -38,7 +38,7 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
   full_date  <- seq(start_date, end_date, by="day")
 
   input_data <- data.frame(dates  = full_date,
-                           values = with(input_data, values[match(full_date, dates)])
+                           values = with(input_data, values[match(as.Date(full_date), as.Date(dates))])
   )
 
   #Remove 29th of February

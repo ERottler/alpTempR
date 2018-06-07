@@ -85,12 +85,6 @@ ahum_sl <- as.data.frame(apply(ahum_data[, -1], 2 , f_sl))*10 ; ahum_sl <- stat_
 airp_sl <- as.data.frame(apply(airp_data[, -1], 2 , f_sl))*10 ; airp_sl <- stat_coverage(airp_sl)
 snow_sl <- as.data.frame(apply(snow_data[, -1], 2 , f_sl_sn))*10*100 ; snow_sl <- stat_coverage(snow_sl)
 
-
-t.dat <- c(0, 0.3, 1, 3, 3.4, 6)
-t.dat <- c(rep(0,34), 0.01, 0.01, 0.01)
-zyp.trend.vector(t.dat, method="zhang")[2]
-
-
 #Calculate singificance of trends using Mann Kendall
 tem0_mk <- as.data.frame(apply(tem0_data[, -1], 2 , f_mk)) ; tem0_mk <- stat_coverage(tem0_mk)
 temx_mk <- as.data.frame(apply(temx_data[, -1], 2 , f_mk)) ; temx_mk <- stat_coverage(temx_mk)
@@ -329,7 +323,7 @@ wt_data <- rbind(wt_5, #High Pressure over the Alps
                  wt_1, #NorthEast, indifferent
                  wt_3, #Westerly flow over Northern Europe
                  wt_6  #North, cyclonic
-                 )
+                 )*100*10 #Trend frequency in %/dec
 
 #Smooth frequency values using loess
 wl_data[1,] <- loess_NA_restore(wl_data[1, ])
