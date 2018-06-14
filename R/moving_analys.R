@@ -177,9 +177,19 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
 
   if(method_analys == "weather_type_window_likeli_sens_slope"){
     #Selected weather type: Yes (1) or No (0)
-    f_weatherYN <- function(data_in){ifelse(data_in == weather_type, 1, 0)}
+
+    f_weatherYN <- function(data_in, gwts = weather_type){
+
+         if(data_in %in% gwts){
+           data_in <- 1
+         }else{
+           data_in <- 0
+         }
+      return(data_in)
+    }
 
     input_data$values <- sapply(input_data$values, f_weatherYN)
+
 
     #Apply moving average
     input_data$ma <- rollapply(data = input_data$values, width = window_width,
@@ -219,8 +229,6 @@ moving_analys <- function(dates, values, start_year, end_year, window_width,
 
 
   }
-
-
 
   if(method_analys == "snow_window_likeli_mk"){
     #Snow yes or no

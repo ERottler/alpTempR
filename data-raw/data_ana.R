@@ -196,7 +196,7 @@ for(i in 1:length(stat_IDs)){
 }
 
 
-#Weather type classification
+#WTC_CPA####
 
 stat_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order58612/order_58612_data.txt"),
                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
@@ -366,3 +366,150 @@ cbind(as.character(stat_meta$name), data_avail)
 # rm(ahum_data, airp_data, clou_data, data_stat, out_data, radi_data,
 #    snow_data, stat_data, suns_data, tem0_data, temn_data, temx_data, data_avail,
 #    base_dir)
+
+
+#WTC_GWT_26####
+gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
+                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+gwt26_data$time <- as.POSIXct(strptime(gwt26_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_gwt26 <- data.frame(date = full_date,
+                         value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
+
+
+gwt_med <- function(dates, clim_data, gwt_data){
+
+  input_data <- data.frame(dates = dates,
+                           clim = clim_data,
+                           gwt = gwt_data)
+
+
+  #Remove 29th of February
+  input_data <- input_data[-which(format(input_data$dates, "%m%d") == "0229"),]
+
+  #Vector with the 365 days of the year
+  days <- seq(as.Date('2014-01-01'), to=as.Date('2014-12-31'), by='days')
+  days <- format(days,"%m-%d")
+
+  #Order climate data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+
+  for(i in 0:(length(start_year:end_year)-1)) {
+
+    data_day[i+1, 2:366] <- input_data$clim[(i*365+1):((i+1)*365)]
+
+  }
+
+  data_day_clim <- data_day
+
+  #Order gwt data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+
+  for(i in 0:(length(start_year:end_year)-1)) {
+
+    data_day[i+1, 2:366] <- input_data$gwt[(i*365+1):((i+1)*365)]
+
+  }
+
+  data_day_gwt <- data_day
+
+
+for(k in 1:26){
+
+  for (i in 2:ncol(data_day_clim)) {
+
+    gwt_days <- which(data_day_gwt[, i] == k)
+    gwt_days_med <- median(data_day_clim[gwt_days, i])
+
+    if(i == 2){
+      gwt_med <- gwt_days_med
+    }else
+      gwt_med <- c(gwt_med, gwt_days_med)
+  }
+
+  if(k ==1){
+    gwt_out <- gwt_med
+  }else{
+    gwt_out <- cbind(gwt_out, gwt_med)
+  }
+
+}
+
+  colnames(gwt_out) <- 1:26
+  return(gwt_out)
+
+}
+
+#Swiss average
+stat_cols_tem0 <- which(colnames(tem0_data) %in% colnames(tem0_sl))
+
+tem0_use <- tem0_data[, stat_cols_tem0]
+
+tem0_4_gwt <- apply(tem0_use, 1, med_na)
+
+gwt_tem0 <- gwt_med(dates = tem0_data$date, clim_data = tem0_4_gwt, gwt_data = gwt26_data$wkwtg3d0)
+
+#get rank out of mean values
+
+gwt_rank_tem0 <- matrix(NA, ncol = 26, nrow = 365)
+
+for (i in 1:365) {
+
+  gwt_tem0_sort <- sort(gwt_tem0[i, ])
+
+ if(length(gwt_tem0_sort) > 9){
+   gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:5])
+   gwt_warm <- as.numeric(names(gwt_tem0_sort)[(length(gwt_tem0_sort)-5) : length(gwt_tem0_sort)])
+ }else{
+   is.even <- function(x) {x %% 2 == 0}
+   if(is.even(length(gwt_clim_sort))){
+     gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:(length(gwt_tem0_sort) / 2)])
+     gwt_warm <- as.numeric(names(gwt_tem0_sort)[((length(gwt_tem0_sort) / 2) + 1) : length(gwt_tem0_sort)])
+   }else{
+     gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:(floor(length(gwt_tem0_sort) / 2))])
+     gwt_warm <- as.numeric(names(gwt_tem0_sort)[ceiling((length(gwt_tem0_sort) / 2)) : length(gwt_tem0_sort)])
+   }
+ }
+ gwt_rank_tem0[i, gwt_cold] <-  -1
+ gwt_rank_tem0[i, gwt_warm] <-   1
+
+}
+
+#Determine driving weather types
+gwt_sums_tem0 <- apply(gwt_rank_tem0[,], 2, sum_na)
+
+names(gwt_sums_tem0) <- 1:26
+
+gwt_sums_tem0_sort <- sort(gwt_sums_tem0)
+
+gwt_lows_tem0  <- 1:5
+gwt_highs_tem0 <- 22:26
+
+gwt_low_tem0   <- as.numeric(names(gwt_sums_tem0_sort)[gwt_lows_tem0])
+gwt_high_tem0  <- as.numeric(names(gwt_sums_tem0_sort)[gwt_highs_tem0])
+
+#Calculate changes in frequencies
+gwt_tem0_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_high_tem0)*100*10# [%/dec]
+
+gwt_tem0_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_low_tem0)*100*10 # [%/dec]
+
+
+

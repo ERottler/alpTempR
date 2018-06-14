@@ -245,7 +245,7 @@ image_cycle_elev(data_in = snow_li,
 dev.off()
 
 
-#weather_type----
+#wtc_cap----
 
 pdf(paste0("u:/RhineFlow/Elevation/weather_type_r.pdf"), width = 6.7, height = 2)
 
@@ -309,11 +309,75 @@ mtext("Trend window prob. [%/dec]", side = 4, line = 0.5, padj = 1, cex = 0.8)
 
 dev.off()
 
-#Mean values categories
-catego_average(tem0_sl, stat_meta)
-catego_average(radi_sl, stat_meta)
-catego_average(suns_me, stat_meta)
-catego_average(suns_sl, stat_meta)
-catego_average(ahum_me, stat_meta)
 
+
+
+#wtc_gwt_26####
+
+pdf(paste0("u:/RhineFlow/Elevation/gwt_26_r.pdf"), width = 6.7, height = 2)
+
+par(oma = c(0,0,0,0))
+par(family = "serif")
+par(mfrow = c(1,2))
+
+y <- 1:26
+x <- 1:365
+
+#Plot1: Weather type ranking high / low
+par(mar = c(1, 2, 1, 0.6))
+col_lows  <- "dodgerblue3"
+col_highs <- "firebrick"
+col_hig_im <- "firebrick"
+col_low_im <- "dodgerblue3"
+image(x, y, as.matrix(gwt_rank_tem0), col = c(col_low_im, col_hig_im), breaks = c(-2, 0, 2), ylab = "",
+      xlab = "", main = "", axes = F)
+
+x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
+x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
+
+axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
+mtext("Weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
+box()
+mtext("GWT26 Weather type classification", side = 3, line = 0.6, padj = 1, at = 385, cex = 1)
+
+#Add markers for selected weather types
+par(xpd = T)
+
+points_x <- rep(375, length(gwt_low_tem0))
+points_y_low  <- c(gwt_low_tem0)
+points_y_high <- c(gwt_high_tem0)
+
+Arrows(points_x, points_y_low, points_x+5,  points_y_low, col = col_lows,
+       arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
+
+Arrows(points_x, points_y_high, points_x+5,  points_y_high, col = col_highs,
+       arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
+
+par(xpd = F)
+
+#Plot 2: Window trends frequencies
+par(mar = c(1, 0.2, 1, 2))
+
+plot(gwt_tem0_high, type = "n", main ="",
+     ylim = c(min_na(c(gwt_tem0_low, gwt_tem0_high)),  max_na(c(gwt_tem0_low, gwt_tem0_high))),
+     ylab = "", xlab = "", axes = F)
+lines(loess_NA_restore(gwt_tem0_low), col = col_lows, lwd = 2)
+lines(loess_NA_restore(gwt_tem0_high), col = col_highs, lwd = 2)
+axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+axis(4, mgp = c(3, 0.0, 0), tck=-0.04, cex.axis = 0.7)
+abline(h = 0, lty = "dashed", lwd = 0.9)
+abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+box()
+
+mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
+
+
+dev.off()
 
