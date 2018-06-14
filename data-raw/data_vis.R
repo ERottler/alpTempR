@@ -10,11 +10,11 @@ stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep="
 
 #cycl_elev_mea----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 6.7, height = 8,
-    units = "in", res = 800)
+# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 6.7, height = 8,
+#     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -70,11 +70,11 @@ dev.off()
 
 #cycl_elev_slo----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 6.7, height = 8,
-     units = "in", res = 800)
+# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 6.7, height = 8,
+#      units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")

@@ -15,13 +15,28 @@ if(data_meta$category[which(grepl(ID, data_meta$stn))] == "high")  {point_col <-
 if(data_meta$category[which(grepl(ID, data_meta$stn))] == "middle"){point_col <- "black"}
 if(data_meta$category[which(grepl(ID, data_meta$stn))] == "low")   {point_col <- "red3"}
 
+if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Jura")     {point_typ <- 21}
+if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Plateau")  {point_typ <- 22}
+if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Alps")     {point_typ <- 23}
+if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "S_Alps")   {point_typ <- 25}
+
 if(no_col){point_col <- "grey30"}
 
-if(is_hom){
-  if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized")     {point_typ <- 8}
-  if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "quality-checked") {point_typ <- 19}
-}else{point_typ = 19}
+# if(is_hom){
+#   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized")     {point_typ <- 8}
+#   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "quality-checked") {point_typ <- 19}
+# }else{point_typ = 19}
 
-points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
-       pch=point_typ, cex=1, col=point_col)
+if(is_hom){
+  if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized"){
+     points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
+            pch=point_typ, cex=1, col=point_col, bg = "yellow2")}#yellow
+  if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "quality-checked"){
+    points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
+           pch=point_typ, cex=1, col=point_col, bg = point_col)}
+
+}else{
+  points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
+         pch=point_typ, cex=1, col=point_col, bg = point_col)
+}
 }

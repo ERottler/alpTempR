@@ -6,6 +6,7 @@
 ###
 
 library("leaflet")
+library("htmlwidgets")
 
 baseDir    <- "u:/RhineFlow/Elevation/"
 setwd(baseDir)
@@ -14,15 +15,15 @@ stationMeta <- read.table(paste0(baseDir,"/Data/rawData/IDAweb/stationMeta.csv")
 
 ###
 
-map <- leaflet(stationMeta) %>% 
+map <- leaflet(stationMeta) %>%
   # Base groups
   #addTiles(group = "OSM (default)") %>%
   addProviderTiles(providers$Stamen.TerrainBackground, group = "TerrainBackground") %>%
   addProviderTiles(providers$Esri.WorldImagery,        group = "WorldImagery") %>%
   addProviderTiles(providers$Esri.NatGeoWorldMap,      group = "NatGeoWorldMap") %>%
   addProviderTiles(providers$Esri.WorldTopoMap,      group = "Esri.WorldTopoMap") %>%
-  # Overlay groups  
-  addCircleMarkers(~lon, ~lat, label = as.character(stationMeta$name), popup = ~paste0(as.character(name)," (",stationMeta$stn,"): ",alt," m"), 
+  # Overlay groups
+  addCircleMarkers(~lon, ~lat, label = as.character(stationMeta$name), popup = ~paste0(as.character(name)," (",stationMeta$stn,"): ",alt," m"),
                    labelOptions = labelOptions(noHide = T, textOnly = TRUE, direction = "bottom"), stroke = F, group = "Stations", col="red") %>%
   # Layers control
   addLayersControl(
@@ -32,4 +33,6 @@ map <- leaflet(stationMeta) %>%
   )
 
 map
+
+saveWidget(map, file=paste0(baseDir, "map_stations.html"))
 
