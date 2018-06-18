@@ -5,6 +5,8 @@
 ###
 library("zoo")
 library("RColorBrewer")
+library("alptempr")
+library("shape")
 
 stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep=",", header=T)
 
@@ -143,11 +145,11 @@ pos_iso_text[2, ] <- c(67, 52, 34, 12)
 my_col <- colorRampPalette(brewer.pal(11,"RdYlBu"))(100); my_col <- my_col[length(my_col):1]
 
 
-# pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
+pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/imag_elev_slo.png"), width = 6.7, height = 7,
 #     units = "in", res = 1200)
-tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 6.7, height = 8,
-     units = "in", res = 800)
+# tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 6.7, height = 8,
+#      units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -314,21 +316,38 @@ dev.off()
 
 #wtc_gwt_26####
 
-pdf(paste0("u:/RhineFlow/Elevation/gwt_26_r.pdf"), width = 6.7, height = 2)
+pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 6.7, height = 4)
 
 par(oma = c(0,0,0,0))
 par(family = "serif")
-par(mfrow = c(1,2))
+par(mfrow = c(2,2))
 
 y <- 1:26
 x <- 1:365
 
-#Plot1: Weather type ranking high / low
-par(mar = c(1, 2, 1, 0.6))
-col_lows  <- "dodgerblue3"
-col_highs <- "firebrick"
-col_hig_im <- "firebrick"
-col_low_im <- "dodgerblue3"
+#Plot 1: Temperature - Weather type ranking high / low
+par(mar = c(1, 2, 1.5, 0.6))
+
+col_lows  <- "steelblue4"
+col_highs <- "darkorange3" #firebrick
+col_hig_im <- "darkorange3"
+col_low_im <- "steelblue4"
+col_net <- "black"
+
+gwt_max <- max_na(c(loess_NA_restore(gwt_ahum_low),
+                    loess_NA_restore(gwt_ahum_high),
+                    (loess_NA_restore(gwt_ahum_high) - loess_NA_restore(gwt_tem0_low)),
+                    loess_NA_restore(gwt_tem0_low),
+                    loess_NA_restore(gwt_tem0_high),
+                    (loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low))))+2
+
+gwt_min <- min_na(c(loess_NA_restore(gwt_ahum_low),
+                    loess_NA_restore(gwt_ahum_high),
+                    (loess_NA_restore(gwt_ahum_high) - loess_NA_restore(gwt_tem0_low)),
+                    loess_NA_restore(gwt_tem0_low),
+                    loess_NA_restore(gwt_tem0_high),
+                    (loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low))))-1
+
 image(x, y, as.matrix(gwt_rank_tem0), col = c(col_low_im, col_hig_im), breaks = c(-2, 0, 2), ylab = "",
       xlab = "", main = "", axes = F)
 
@@ -340,9 +359,9 @@ axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
 axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
      col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
 axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
-mtext("Weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
+mtext("GWT26 weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
 box()
-mtext("GWT26 Weather type classification", side = 3, line = 0.6, padj = 1, at = 385, cex = 1)
+mtext("a) Weather types: Temperature", side = 3, line = 0.8, padj = 1, at = 385, cex = 1)
 
 #Add markers for selected weather types
 par(xpd = T)
@@ -359,14 +378,15 @@ Arrows(points_x, points_y_high, points_x+5,  points_y_high, col = col_highs,
 
 par(xpd = F)
 
-#Plot 2: Window trends frequencies
-par(mar = c(1, 0.2, 1, 2))
+#Plot 2: Temperature - Window trends frequencies
+par(mar = c(1, 0.2, 1.5, 2))
 
 plot(gwt_tem0_high, type = "n", main ="",
-     ylim = c(min_na(c(gwt_tem0_low, gwt_tem0_high)),  max_na(c(gwt_tem0_low, gwt_tem0_high))),
+     ylim = c(gwt_min, gwt_max),
      ylab = "", xlab = "", axes = F)
 lines(loess_NA_restore(gwt_tem0_low), col = col_lows, lwd = 2)
 lines(loess_NA_restore(gwt_tem0_high), col = col_highs, lwd = 2)
+lines(loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low), col = col_net, lwd = 2)
 axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
      col="black", col.axis="black", tck=-0.04)#plot ticks
 axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
@@ -374,10 +394,328 @@ axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tic
 axis(4, mgp = c(3, 0.0, 0), tck=-0.04, cex.axis = 0.7)
 abline(h = 0, lty = "dashed", lwd = 0.9)
 abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+legend("topleft", c("            ","            "), cex = 0.8, box.col = "white", bg = "white", adj = 0.2)
+mtext("warm GWTs", side = 3, line = -0.4, padj = 1, adj = 0.02, cex = 0.7, col = col_highs)
+mtext("cold GWTs", side = 3, line = -1.1, padj = 1, adj = 0.02, cex = 0.7, col = col_lows)
+mtext("WTE index",  side = 3, line = -1.8, padj = 1, adj = 0.02, cex = 0.7, col = col_net)
+box()
+
+mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
+
+
+#Plot3: Humidity: Weather type ranking high / low
+par(mar = c(1, 2, 1.5, 0.6))
+
+image(x, y, as.matrix(gwt_rank_ahum), col = c(col_low_im, col_hig_im), breaks = c(-2, 0, 2), ylab = "",
+      xlab = "", main = "", axes = F)
+
+x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
+x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
+
+axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
+mtext("GWT26 weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
+box()
+mtext("b) Weather types: Humidity", side = 3, line = 0.8, padj = 1, at = 385, cex = 1)
+
+#Add markers for selected weather types
+par(xpd = T)
+
+points_x <- rep(375, length(gwt_low_ahum))
+points_y_low  <- c(gwt_low_ahum)
+points_y_high <- c(gwt_high_ahum)
+
+Arrows(points_x, points_y_low, points_x+5,  points_y_low, col = col_lows,
+       arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
+
+Arrows(points_x, points_y_high, points_x+5,  points_y_high, col = col_highs,
+       arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
+
+par(xpd = F)
+
+#Plot 4: Humidity - Window trends frequencies
+par(mar = c(1, 0.2, 1.5, 2))
+
+plot(gwt_ahum_high, type = "n", main ="",
+     ylim = c(gwt_min, gwt_max),
+     ylab = "", xlab = "", axes = F)
+lines(loess_NA_restore(gwt_ahum_low), col = col_lows, lwd = 2)
+lines(loess_NA_restore(gwt_ahum_high), col = col_highs, lwd = 2)
+lines(loess_NA_restore(gwt_ahum_high) - loess_NA_restore(gwt_ahum_low), col = col_net,
+      lwd = 2, lty = "solid")
+
+axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+axis(4, mgp = c(3, 0.0, 0), tck=-0.04, cex.axis = 0.7)
+abline(h = 0, lty = "dashed", lwd = 0.9, col = "grey40")
+abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+legend("topleft", c("            ","            "), cex = 0.8, box.col = "white", bg = "white", adj = 0.2)
+mtext("moist GWTs", side = 3, line = -0.4, padj = 1, adj = 0.02, cex = 0.7, col = col_highs)
+mtext("dry GWTs", side = 3, line = -1.1, padj = 1, adj = 0.02, cex = 0.7, col = col_lows)
+mtext("WTE index",  side = 3, line = -1.8, padj = 1, adj = 0.02, cex = 0.7, col = col_net)
 box()
 
 mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
 
 
 dev.off()
+
+#seas_vals_category####
+
+
+pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 6.7, height = 4)
+
+par(oma = c(0,0,0,0))
+par(family = "serif")
+par(mfrow = c(2,2))
+par(mar = c(1, 2, 1, 0.6))
+hori_lines <- c(-10, -5, 0, 5, 10, 15, 20, 25)
+#col2rgb("blue3")
+my_blu <- rgb(0, 0, 205, max=255, alpha = 160)
+#col2rgb("red3")
+my_red <- rgb(205, 0, 0, max=255, alpha = 160)
+#col2rgb("black")
+my_bla <- rgb(0, 0, 0,   max=255, alpha = 160)
+
+#DJF
+plot(djf_low, type = "n", ylim=c(min_na(c(djf_low, djf_mid, djf_hig))-1.2,
+                                 max_na(c(djf_low, djf_mid, djf_hig))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(djf_hig, col=my_blu, lwd = 2, type = "l")
+lines(djf_mid, col=my_bla, lwd = 2, type = "l")
+lines(djf_low, col=my_red, lwd = 2, type = "l")
+points(djf_hig, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(djf_mid, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(djf_low, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(djf_low_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(djf_mid_sl, col = "black", lwd = 1, lty = "longdash")
+abline(djf_hig_sl, col = "blue3", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("DJF", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+
+#MAM
+plot(mam_low, type = "n", ylim=c(min_na(c(mam_low, mam_mid, mam_hig))-1.5,
+                                 max_na(c(mam_low, mam_mid, mam_hig))+2.39),
+     axes = F, ylab = "", xlab = "")
+lines(mam_hig, col=my_blu, lwd = 2, type = "l")
+lines(mam_mid, col=my_bla, lwd = 2, type = "l")
+lines(mam_low, col=my_red, lwd = 2, type = "l")
+points(mam_hig, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(mam_mid, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(mam_low, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(mam_low_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(mam_mid_sl, col = "black", lwd = 1, lty = "longdash")
+abline(mam_hig_sl, col = "blue3", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", "   ", box.col = "white", bg = "white", adj = 0.2)
+mtext("MAM", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+#JJA
+plot(jja_low, type = "n", ylim=c(min_na(c(jja_low, jja_mid, jja_hig))-0.9,
+                                 max_na(c(jja_low, jja_mid, jja_hig))+0.9),
+     axes = F, ylab = "", xlab = "")
+lines(jja_hig, col=my_blu, lwd = 2, type = "l")
+lines(jja_mid, col=my_bla, lwd = 2, type = "l")
+lines(jja_low, col=my_red, lwd = 2, type = "l")
+points(jja_hig, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(jja_mid, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(jja_low, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(jja_low_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(jja_mid_sl, col = "black", lwd = 1, lty = "longdash")
+abline(jja_hig_sl, col = "blue3", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("JJA", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+#SON
+plot(son_low, type = "n", ylim=c(min_na(c(son_low, son_mid, son_hig))-1.0,
+                                 max_na(c(son_low, son_mid, son_hig))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(son_hig, col=my_blu, lwd = 2, type = "l")
+lines(son_mid, col=my_bla, lwd = 2, type = "l")
+lines(son_low, col=my_red, lwd = 2, type = "l")
+points(son_hig, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(son_mid, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(son_low, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(son_low_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(son_mid_sl, col = "black", lwd = 1, lty = "longdash")
+abline(son_hig_sl, col = "blue3", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("SON", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+dev.off()
+
+
+
+
+
+
+
+#seas_vals_region####
+
+
+pdf(paste0("u:/RhineFlow/Elevation/seas_vals_reg.pdf"), width = 6.7, height = 4)
+
+par(oma = c(0,0,0,0))
+par(family = "serif")
+par(mfrow = c(2,2))
+par(mar = c(1, 2, 1, 0.6))
+hori_lines <- c(-10, -5, 0, 5, 10, 15, 20, 25)
+#col2rgb("blue3")
+my_blu <- rgb(0, 0, 205, max=255, alpha = 160)
+#col2rgb("red3")
+my_red <- rgb(205, 0, 0, max=255, alpha = 160)
+#col2rgb("black")
+my_bla <- rgb(0, 0, 0,   max=255, alpha = 160)
+
+#DJF
+plot(djf_jur, type = "n", ylim=c(min_na(c(djf_jur, djf_pla, djf_alp))-1.2,
+                                 max_na(c(djf_jur, djf_pla, djf_alp))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(djf_sal, col="orange2", lwd = 2, type = "l")
+lines(djf_alp, col=my_blu, lwd = 2, type = "l")
+lines(djf_pla, col=my_bla, lwd = 2, type = "l")
+lines(djf_jur, col=my_red, lwd = 2, type = "l")
+points(djf_sal, col="orange2", lwd = 2, pch = 16, cex = 0.7)
+points(djf_alp, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(djf_pla, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(djf_jur, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(djf_jur_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(djf_pla_sl, col = "black", lwd = 1, lty = "longdash")
+abline(djf_alp_sl, col = "blue3", lwd = 1, lty = "longdash")
+abline(djf_sal_sl, col = "orange2", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+#abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("DJF", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+
+#MAM
+plot(mam_jur, type = "n", ylim=c(min_na(c(mam_jur, mam_pla, mam_alp, mam_sal))-1.2,
+                                 max_na(c(mam_jur, mam_pla, mam_alp, mam_sal))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(mam_sal, col="orange2", lwd = 2, type = "l")
+lines(mam_alp, col=my_blu, lwd = 2, type = "l")
+lines(mam_pla, col=my_bla, lwd = 2, type = "l")
+lines(mam_jur, col=my_red, lwd = 2, type = "l")
+points(mam_sal, col="orange2", lwd = 2, pch = 16, cex = 0.7)
+points(mam_alp, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(mam_pla, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(mam_jur, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(mam_jur_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(mam_pla_sl, col = "black", lwd = 1, lty = "longdash")
+abline(mam_alp_sl, col = "blue3", lwd = 1, lty = "longdash")
+abline(mam_sal_sl, col = "orange2", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+#abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("MAM", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+#JJA
+plot(jja_jur, type = "n", ylim=c(min_na(c(jja_jur, jja_pla, jja_alp, jja_sal))-1.2,
+                                 max_na(c(jja_jur, jja_pla, jja_alp, jja_sal))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(jja_sal, col="orange2", lwd = 2, type = "l")
+lines(jja_alp, col=my_blu, lwd = 2, type = "l")
+lines(jja_pla, col=my_bla, lwd = 2, type = "l")
+lines(jja_jur, col=my_red, lwd = 2, type = "l")
+points(jja_sal, col="orange2", lwd = 2, pch = 16, cex = 0.7)
+points(jja_alp, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(jja_pla, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(jja_jur, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(jja_jur_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(jja_pla_sl, col = "black", lwd = 1, lty = "longdash")
+abline(jja_alp_sl, col = "blue3", lwd = 1, lty = "longdash")
+abline(jja_sal_sl, col = "orange2", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+#abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("JJA", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+#SON
+plot(son_jur, type = "n", ylim=c(min_na(c(son_jur, son_pla, son_alp, son_sal))-1.2,
+                                 max_na(c(son_jur, son_pla, son_alp, son_sal))+1.2),
+     axes = F, ylab = "", xlab = "")
+lines(son_sal, col="orange2", lwd = 2, type = "l")
+lines(son_alp, col=my_blu, lwd = 2, type = "l")
+lines(son_pla, col=my_bla, lwd = 2, type = "l")
+lines(son_jur, col=my_red, lwd = 2, type = "l")
+points(son_sal, col="orange2", lwd = 2, pch = 16, cex = 0.7)
+points(son_alp, col="blue3", lwd = 2, pch = 16, cex = 0.7)
+points(son_pla, col="black", lwd = 2, pch = 16, cex = 0.7)
+points(son_jur, col="red3",  lwd = 2, pch = 16, cex = 0.7)
+abline(son_jur_sl, col = "red3", lwd = 1, lty = "longdash")
+abline(son_pla_sl, col = "black", lwd = 1, lty = "longdash")
+abline(son_alp_sl, col = "blue3", lwd = 1, lty = "longdash")
+abline(son_sal_sl, col = "orange2", lwd = 1, lty = "longdash")
+axis(2, mgp = c(3, 0.2, 0), tck=-0.02, cex.axis = 0.7)
+
+axis(1, at =  c(10, 20, 30), c("1990","2000","2010"), tick = T, tck=-0.02,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
+abline(v = c(5, 10, 15, 20, 25, 30, 35), lty = "dotted", lwd = 0.8, col = "grey30")
+#abline(h = hori_lines, lty = "dotted", lwd = 0.8, col = "grey30")
+mtext("Temperature °C", side = 2, line = 1.6, padj = 1, cex = 0.8)
+legend("topleft", " ", box.col = "white", bg = "white", adj = 0.2)
+mtext("SON", side = 3, line = -0.6, padj = 1, adj = 0.02, cex = 0.8)
+box()
+
+dev.off()
+
+
+
+
 

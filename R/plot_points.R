@@ -11,16 +11,23 @@
 #' @export
 plot_points <- function(data_in, data_meta, ID, no_col = FALSE, is_hom = FALSE){
 
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "high")  {point_col <- "blue3"}
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "middle"){point_col <- "black"}
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "low")   {point_col <- "red3"}
+  #col2rgb("blue3")
+  my_blu <- rgb(0, 0, 205, max=255, alpha = 160)
+  #col2rgb("red3")
+  my_red <- rgb(205, 0, 0, max=255, alpha = 160)
+  #col2rgb("black")
+  my_bla <- rgb(0, 0, 0,   max=255, alpha = 160)
+
+if(data_meta$category[which(grepl(ID, data_meta$stn))] == "high")  {point_col <- "blue3"; backg <- my_blu}
+if(data_meta$category[which(grepl(ID, data_meta$stn))] == "middle"){point_col <- "black"; backg <- my_bla}
+if(data_meta$category[which(grepl(ID, data_meta$stn))] == "low")   {point_col <- "red3";  backg <- my_red}
 
 if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Jura")     {point_typ <- 21}
 if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Plateau")  {point_typ <- 22}
 if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Alps")     {point_typ <- 23}
 if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "S_Alps")   {point_typ <- 25}
 
-if(no_col){point_col <- "grey30"}
+if(no_col){point_col <- "grey30"; backg = "grey30"}
 
 # if(is_hom){
 #   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized")     {point_typ <- 8}
@@ -30,13 +37,13 @@ if(no_col){point_col <- "grey30"}
 if(is_hom){
   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized"){
      points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
-            pch=point_typ, cex=1, col=point_col, bg = "yellow2")}#yellow
+            pch=point_typ, cex=1, col=point_col, bg = rgb(255, 238, 0,   max=255, alpha = 150))}#yellow
   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "quality-checked"){
     points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
-           pch=point_typ, cex=1, col=point_col, bg = point_col)}
+           pch=point_typ, cex=1, col=point_col, bg = backg)}
 
 }else{
   points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
-         pch=point_typ, cex=1, col=point_col, bg = point_col)
+         pch=point_typ, cex=1, col=point_col, bg = backg)
 }
 }
