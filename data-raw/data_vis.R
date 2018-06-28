@@ -8,15 +8,17 @@ library("RColorBrewer")
 library("alptempr")
 library("shape")
 
+base_dir <- "u:/RhineFlow/Elevation/Data/"
+
 stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep=",", header=T)
 
 #cycl_elev_mea----
 
-pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 6.7, height = 8,
-#     units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 6.7, height = 8,
+    units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -72,11 +74,11 @@ dev.off()
 
 #cycl_elev_slo----
 
-pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 6.7, height = 8,
-#      units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 6.7, height = 8,
+     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -145,11 +147,11 @@ pos_iso_text[2, ] <- c(67, 52, 34, 12)
 my_col <- colorRampPalette(brewer.pal(11,"RdYlBu"))(100); my_col <- my_col[length(my_col):1]
 
 
-pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
+#pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/imag_elev_slo.png"), width = 6.7, height = 7,
 #     units = "in", res = 1200)
-# tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 6.7, height = 8,
-#      units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 6.7, height = 8,
+     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -316,7 +318,9 @@ dev.off()
 
 #wtc_gwt_26####
 
-pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 6.7, height = 4)
+# pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 6.7, height = 4)
+tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 6.7, height = 4,
+     units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
 par(family = "serif")
@@ -326,12 +330,12 @@ y <- 1:26
 x <- 1:365
 
 #Plot 1: Temperature - Weather type ranking high / low
-par(mar = c(1, 2, 1.5, 0.6))
+par(mar = c(1, 2.2, 1.5, 0.6))
 
-col_lows  <- "steelblue4"
+col_lows  <- "darkblue"
 col_highs <- "darkorange3" #firebrick
 col_hig_im <- "darkorange3"
-col_low_im <- "steelblue4"
+col_low_im <- "darkblue"
 col_net <- "black"
 
 gwt_max <- max_na(c(loess_NA_restore(gwt_ahum_low),
@@ -359,7 +363,7 @@ axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
 axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
      col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
 axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
-mtext("GWT26 weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
+mtext("GWT26 weather type", side = 2, line = 1.5, padj = 1, cex = 0.8)
 box()
 mtext("a) Weather types: Temperature", side = 3, line = 0.8, padj = 1, at = 385, cex = 1)
 
@@ -404,7 +408,7 @@ mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
 
 
 #Plot3: Humidity: Weather type ranking high / low
-par(mar = c(1, 2, 1.5, 0.6))
+par(mar = c(1, 2.2, 1.5, 0.6))
 
 image(x, y, as.matrix(gwt_rank_ahum), col = c(col_low_im, col_hig_im), breaks = c(-2, 0, 2), ylab = "",
       xlab = "", main = "", axes = F)
@@ -417,7 +421,7 @@ axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
 axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
      col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
 axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
-mtext("GWT26 weather type", side = 2, line = 1.4, padj = 1, cex = 0.8)
+mtext("GWT26 weather type", side = 2, line = 1.5, padj = 1, cex = 0.8)
 box()
 mtext("b) Weather types: Humidity", side = 3, line = 0.8, padj = 1, at = 385, cex = 1)
 
@@ -467,8 +471,10 @@ dev.off()
 
 #seas_vals_category####
 
+# pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 6.7, height = 4)
 
-pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 6.7, height = 4)
+tiff(paste0("u:/RhineFlow/Elevation/seas_vals_cat.tiff"), width = 6.7, height = 4,
+     units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
 par(family = "serif")

@@ -977,3 +977,45 @@ son_sal_sl <- as.numeric(zyp.trend.vector(son_sal, method = "zhang", conf.interv
 
 
 
+
+#Frequencies weather types for table----
+
+f_frequ_wt <- function(dates, values, start_year, end_year, weather_type){
+
+  input_data <- data.frame(dates = dates, values = values)
+
+  #Clip selected time period
+  input_data <- input_data[as.numeric(format(input_data$date,'%Y')) >= start_year, ]
+  input_data <- input_data[as.numeric(format(input_data$date,'%Y')) <= end_year, ]
+
+  #Fill possible gaps
+  start_date <- as.POSIXct(strptime(paste0(start_year,"-01-01"), "%Y-%m-%d", tz="UTC"))
+  end_date   <- as.POSIXct(strptime(paste0(end_year,"-12-31"),   "%Y-%m-%d", tz="UTC"))
+  full_date  <- seq(start_date, end_date, by="day")
+
+  input_data <- data.frame(dates  = full_date,
+                           values = with(input_data, values[match(as.Date(full_date), as.Date(dates))])
+  )
+
+  wt_frequ <- length(which(input_data$values == weather_type)) / length(input_data$values) * 100 # Frequency in [%]
+
+  return(wt_frequ)
+
+}
+
+gwt26_frequ <- rep(NA, 26)
+for (i in 1:26) {
+
+   wt_fr <- f_frequ_wt(dates  = data_gwt26$date,
+                       values = data_gwt26$value,
+                       start_year = start_year,
+                       end_year = end_year,
+                       weather_type = i)
+
+   gwt26_frequ[i] <- wt_fr
+}
+
+wt_temp <- c(1,2,3,4,25,9,10,11,12,26)
+wt_humi <- c(1,3,4,9,10,11)
+sum(gwt26_frequ[wt_temp])
+sum(gwt26_frequ[wt_humi])

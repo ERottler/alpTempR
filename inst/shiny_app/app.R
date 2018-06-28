@@ -6,6 +6,8 @@
 
 ###
 
+#options(shiny.error = browser)
+
 library("devtools")
 library("alptempr")
 library("shiny")
@@ -14,6 +16,7 @@ library("leaflet")
 library("zoo")
 library("RColorBrewer")
 library("zyp")
+library("shape")
 
 baseDir  <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
 countDir <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/data/"
@@ -211,20 +214,34 @@ server <- function(input, output) {
              par(family = "serif")
              par(mfrow = c(1,2))
 
+             y <- 1:26
+             x <- 1:365
 
-             blue_1  <- "skyblue2"
-             blue_2  <- "blue2"
-             blue_3  <- rgb(0, 0, 120, maxColorValue=255)
-             green_1 <- "darkseagreen3"
-             green_2 <- "darkgreen"
+             #Plot 1: Temperature - Weather type ranking high / low
+             par(mar = c(1, 2.2, 1.5, 0.6))
 
-             my_cols <- c("orange2", "gold", blue_1, blue_2, blue_3, "grey75",
-                          "grey42", green_1, green_2)
-             #Plot1: Frequencies
-             par(mar = c(1, 2, 1, 0.2))
+             col_lows  <- "darkblue"
+             col_highs <- "darkorange3" #firebrick
+             col_hig_im <- "darkorange3"
+             col_low_im <- "darkblue"
+             col_net <- "black"
 
-             barplot(as.matrix(wl_data), col = my_cols, axisnames = F, border = NA, space = 0,
-                     xaxs = "i", yaxs = "i", ylim = c(0, 100), axes = F)
+             gwt_max <- max_na(c(loess_NA_restore(gwt_ahum_low),
+                                 loess_NA_restore(gwt_ahum_high),
+                                 (loess_NA_restore(gwt_ahum_high) - loess_NA_restore(gwt_tem0_low)),
+                                 loess_NA_restore(gwt_tem0_low),
+                                 loess_NA_restore(gwt_tem0_high),
+                                 (loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low))))+2
+
+             gwt_min <- min_na(c(loess_NA_restore(gwt_ahum_low),
+                                 loess_NA_restore(gwt_ahum_high),
+                                 (loess_NA_restore(gwt_ahum_high) - loess_NA_restore(gwt_tem0_low)),
+                                 loess_NA_restore(gwt_tem0_low),
+                                 loess_NA_restore(gwt_tem0_high),
+                                 (loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low))))-1
+
+             image(x, y, as.matrix(gwt_rank_tem0), col = c(col_low_im, col_hig_im), breaks = c(-2, 0, 2), ylab = "",
+                   xlab = "", main = "", axes = F)
 
              x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
              x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
@@ -234,35 +251,49 @@ server <- function(input, output) {
              axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
                   col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
              axis(2, mgp = c(3, 0.2, 0), tck=-0.04, cex.axis = 0.7)
-             mtext("Frequency [%]", side = 2, line = 1.3, padj = 1, cex = 0.8)
+             mtext("GWT26 weather type", side = 2, line = 1.5, padj = 1, cex = 0.8)
              box()
+             mtext("Weather types: Temperature", side = 3, line = 0.8, padj = 1, at = 385, cex = 1)
 
-             mtext("Weather type classifications", side = 3, line = 0.6, padj = 1, at = 385, cex = 1)
+             #Add markers for selected weather types
+             par(xpd = T)
 
-             #Plot 2: Window trends
-             par(mar = c(1, 0.2, 1, 2))
+             points_x <- rep(375, length(gwt_low_tem0))
+             points_y_low  <- c(gwt_low_tem0)
+             points_y_high <- c(gwt_high_tem0)
 
-             plot(loess_NA_restore(wt_5), type="n", axes = F, ylab = "", xlab = "", ylim = c(-0.45, 0.45))
-             lines(loess_NA_restore(wt_data[1, ])*100, col = my_cols[1], lwd = 2)#High Pressure over the Alps
-             lines(loess_NA_restore(wt_data[2, ])*100, col = my_cols[2], lwd = 2)#High Pressure over Central Europe
-             lines(loess_NA_restore(wt_data[3, ])*100, col = my_cols[3], lwd = 2)#Westerly flow over Southern Europe, cyclonic
-             lines(loess_NA_restore(wt_data[4, ])*100, col = my_cols[4], lwd = 2)#West-SouthWest, cyclonic, flat pressure
-             lines(loess_NA_restore(wt_data[5, ])*100, col = my_cols[5], lwd = 2)#West-SouthWest, cyclonic
-             lines(loess_NA_restore(wt_data[6, ])*100, col = my_cols[6], lwd = 2)#East, indifferent
-             lines(loess_NA_restore(wt_data[7, ])*100, col = my_cols[7], lwd = 2)#NorthEast, indifferent
-             lines(loess_NA_restore(wt_data[8, ])*100, col = my_cols[8], lwd = 2)#Westerly flow over Northern Europe
-             lines(loess_NA_restore(wt_data[9, ])*100, col = my_cols[9], lwd = 2)#North, cyclonic
+             Arrows(points_x, points_y_low, points_x+5,  points_y_low, col = col_lows,
+                    arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
 
+             Arrows(points_x, points_y_high, points_x+5,  points_y_high, col = col_highs,
+                    arr.type = "triangle", arr.adj = 1, code = 2, arr.length = 0.15)
+
+             par(xpd = F)
+
+             #Plot 2: Temperature - Window trends frequencies
+             par(mar = c(1, 0.2, 1.5, 2))
+
+             plot(gwt_tem0_high, type = "n", main ="",
+                  ylim = c(gwt_min, gwt_max),
+                  ylab = "", xlab = "", axes = F)
+             lines(loess_NA_restore(gwt_tem0_low), col = col_lows, lwd = 2)
+             lines(loess_NA_restore(gwt_tem0_high), col = col_highs, lwd = 2)
+             lines(loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low), col = col_net, lwd = 2)
              axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
                   col="black", col.axis="black", tck=-0.04)#plot ticks
              axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
-                  col = "black", col.axis = "black", mgp = c(3, 0, 0), cex.axis = 0.7)
+                  col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 0.7)
              axis(4, mgp = c(3, 0.0, 0), tck=-0.04, cex.axis = 0.7)
              abline(h = 0, lty = "dashed", lwd = 0.9)
              abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+             legend("topleft", c("            ","            "), cex = 0.8, box.col = "white", bg = "white", adj = 0.2)
+             mtext("warm GWTs", side = 3, line = -0.4, padj = 1, adj = 0.02, cex = 0.7, col = col_highs)
+             mtext("cold GWTs", side = 3, line = -1.1, padj = 1, adj = 0.02, cex = 0.7, col = col_lows)
+             mtext("WTE index",  side = 3, line = -1.8, padj = 1, adj = 0.02, cex = 0.7, col = col_net)
              box()
 
-             mtext("Trend window prob. [%/dec]", side = 4, line = 0.5, padj = 1, cex = 0.8)
+             mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
+
            }
       }
 

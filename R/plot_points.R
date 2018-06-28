@@ -17,6 +17,8 @@ plot_points <- function(data_in, data_meta, ID, no_col = FALSE, is_hom = FALSE){
   my_red <- rgb(205, 0, 0, max=255, alpha = 160)
   #col2rgb("black")
   my_bla <- rgb(0, 0, 0,   max=255, alpha = 160)
+  #col2rgb("darkorange2")
+  my_hom <- rgb(255, 118, 0,   max=255, alpha = 160)
 
 if(data_meta$category[which(grepl(ID, data_meta$stn))] == "high")  {point_col <- "blue3"; backg <- my_blu}
 if(data_meta$category[which(grepl(ID, data_meta$stn))] == "middle"){point_col <- "black"; backg <- my_bla}
@@ -37,7 +39,7 @@ if(no_col){point_col <- "grey30"; backg = "grey30"}
 if(is_hom){
   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "homogenized"){
      points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
-            pch=point_typ, cex=1, col=point_col, bg = rgb(255, 238, 0,   max=255, alpha = 150))}#yellow
+            pch=point_typ, cex=1, col=point_col, bg = my_hom)}#yellow
   if(data_meta$data_qual[which(grepl(ID, data_meta$stn))] == "quality-checked"){
     points(data_in[which(grepl(ID, names(data_in)))], data_meta$alt[which(grepl(ID, data_meta$stn))],
            pch=point_typ, cex=1, col=point_col, bg = backg)}
