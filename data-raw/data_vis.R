@@ -14,10 +14,10 @@ stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep="
 
 #cycl_elev_mea----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 6.7, height = 8)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 7.09, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 6.7, height = 8,
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 7.09, height = 8,
     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
@@ -74,10 +74,10 @@ dev.off()
 
 #cycl_elev_slo----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 6.7, height = 8)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 7.09, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 6.7, height = 8,
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 7.09, height = 8,
      units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
@@ -147,10 +147,10 @@ pos_iso_text[2, ] <- c(67, 52, 34, 12)
 my_col <- colorRampPalette(brewer.pal(11,"RdYlBu"))(100); my_col <- my_col[length(my_col):1]
 
 
-#pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 6.7, height = 7)
+# pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 7.09, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/imag_elev_slo.png"), width = 6.7, height = 7,
 #     units = "in", res = 1200)
-tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 6.7, height = 8,
+tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 7.09, height = 8,
      units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
@@ -318,8 +318,8 @@ dev.off()
 
 #wtc_gwt_26####
 
-# pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 6.7, height = 4)
-tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 6.7, height = 4,
+# pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 7.09, height = 4)
+tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 7.09, height = 4,
      units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
@@ -471,9 +471,9 @@ dev.off()
 
 #seas_vals_category####
 
-# pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 6.7, height = 4)
+# pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 7.09, height = 4)
 
-tiff(paste0("u:/RhineFlow/Elevation/seas_vals_cat.tiff"), width = 6.7, height = 4,
+tiff(paste0("u:/RhineFlow/Elevation/seas_vals_cat.tiff"), width = 7.09, height = 4,
      units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
@@ -725,3 +725,21 @@ dev.off()
 
 
 
+
+#graph_abst----
+
+tiff(paste0("u:/RhineFlow/Elevation/graph_abs.tiff"), width = 2.36*2, height = 1.97*2,
+     units = "in", res = 800)
+par(oma=c(0,0,0,0))
+par(family="serif")
+
+par(mfrow = c(2,1))
+
+plot_cycl_elev(data_in = tem0_sl, data_mk = tem0_mk, data_in_me = tem0_sl_an,
+               data_meta = stat_meta, main_text = "",
+               margins_1 = c(1.4,1.8,1.8,3.5), margins_2 = c(1.4,1.8,1.8,3.5),
+               no_col = F, show_mk = T, aggr_cat_mean = F, with_hom_dat = T,
+               smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T)
+mtext("Temperature [°C/dec]", side = 3, line = .3, cex = 1.2)
+
+dev.off()

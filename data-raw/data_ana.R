@@ -384,7 +384,6 @@ full_date  <- seq(start_date, end_date, by="day")
 data_gwt26 <- data.frame(date = full_date,
                          value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
 
-
 gwt_med <- function(dates, clim_data, gwt_data){
 
   input_data <- data.frame(dates = dates,
@@ -459,7 +458,7 @@ tem0_use <- tem0_data[, stat_cols_tem0]
 
 tem0_4_gwt <- apply(tem0_use, 1, med_na)
 
-gwt_tem0 <- gwt_med(dates = tem0_data$date, clim_data = tem0_4_gwt, gwt_data = gwt26_data$wkwtg3d0)
+gwt_tem0 <- gwt_med(dates = tem0_data$date, clim_data = tem0_4_gwt, gwt_data = data_gwt26$value)
 
 #get rank out of mean values
 
@@ -606,7 +605,7 @@ ahum_use <- ahum_data[, stat_cols_ahum]
 
 ahum_4_gwt <- apply(ahum_use, 1, med_na)
 
-gwt_ahum <- gwt_med(dates = ahum_data$date, clim_data = ahum_4_gwt, gwt_data = gwt26_data$wkwtg3d0)
+gwt_ahum <- gwt_med(dates = ahum_data$date, clim_data = ahum_4_gwt, gwt_data = data_gwt26$value)
 
 #get rank out of mean values
 
@@ -766,7 +765,7 @@ djf_mid_vals <- seas_vals[, (1 + ((which(stat_categos == "middle")-1) * 4))]
 djf_hig_vals <- seas_vals[, (1 + ((which(stat_categos == "high")-1) * 4))]
 
 mam_low_vals <- seas_vals[, (2 + ((which(stat_categos == "low")-1) * 4))]
-mam_mid_vals <- seas_vals[, (2 + ((which(stat_categos == "middle")-1) * 4))] cete
+mam_mid_vals <- seas_vals[, (2 + ((which(stat_categos == "middle")-1) * 4))]
 mam_hig_vals <- seas_vals[, (2 + ((which(stat_categos == "high")-1) * 4))]
 
 jja_low_vals <- seas_vals[, (3 + ((which(stat_categos == "low")-1) * 4))]
