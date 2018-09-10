@@ -109,7 +109,7 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
            main="", ylab="", xlab="", axes=F,
            ylim=c(min_na(data_in[, ]), max_na(data_in[, ])))
     }
-    print(i)
+    #print(i)
     if(show_mk){
       #yellow if significant trend, else no color
       col_mk <- ifelse(data_mk[,which(paste0(stat_IDs[i]) == colnames(data_in))] > mk_sig_level, "#FFFFFF00", col_2)

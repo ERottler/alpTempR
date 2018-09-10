@@ -20,14 +20,14 @@ plot_points <- function(data_in, data_meta, ID, no_col = FALSE, is_hom = FALSE){
   #col2rgb("darkorange2")
   my_hom <- rgb(255, 118, 0,   max=255, alpha = 160)
 
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "high")  {point_col <- "blue3"; backg <- my_blu}
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "middle"){point_col <- "black"; backg <- my_bla}
-if(data_meta$category[which(grepl(ID, data_meta$stn))] == "low")   {point_col <- "red3";  backg <- my_red}
+if(data_meta$category[which(data_meta$stn == ID)] == "high")  {point_col <- "blue3"; backg <- my_blu}
+if(data_meta$category[which(data_meta$stn == ID)] == "middle"){point_col <- "black"; backg <- my_bla}
+if(data_meta$category[which(data_meta$stn == ID)] == "low")   {point_col <- "red3";  backg <- my_red}
 
-if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Jura")     {point_typ <- 21}
-if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Plateau")  {point_typ <- 22}
-if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "Alps")     {point_typ <- 23}
-if(data_meta$clim_reg[which(grepl(ID, data_meta$stn))] == "S_Alps")   {point_typ <- 25}
+if(data_meta$clim_reg[which(data_meta$stn == ID)] == "Jura")     {point_typ <- 21}
+if(data_meta$clim_reg[which(data_meta$stn == ID)] == "Plateau")  {point_typ <- 22}
+if(data_meta$clim_reg[which(data_meta$stn == ID)] == "Alps")     {point_typ <- 23}
+if(data_meta$clim_reg[which(data_meta$stn == ID)] == "S_Alps")   {point_typ <- 25}
 
 if(no_col){point_col <- "grey30"; backg = "grey30"}
 
