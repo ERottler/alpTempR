@@ -88,7 +88,11 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   #Smooth yearly cycles using loess
   #Re-define loess function with smoothing values selected
   my_loess_NA_restore <- function(data_in, smoo_val, NA_restore = TRUE){
-    loess_NA_restore(data_in = data_in, smoo_val = smooth_val, NA_restore = TRUE)
+    if(length(is.na(data_in)) == length(data_in)){
+      data_out <- data_in
+    }else{
+      data_out <- loess_NA_restore(data_in = data_in, smoo_val = smooth_val, NA_restore = TRUE)
+    }
   }
 
   data_in <- apply(data_in, 2, my_loess_NA_restore)
