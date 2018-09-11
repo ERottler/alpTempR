@@ -88,11 +88,12 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   #Smooth yearly cycles using loess
   #Re-define loess function with smoothing values selected
   my_loess_NA_restore <- function(data_in, smoo_val, NA_restore = TRUE){
-    if(length(is.na(data_in)) == length(data_in)){
+    if(length(which(is.na(data_in))) == length(data_in)){
       data_out <- data_in
     }else{
       data_out <- loess_NA_restore(data_in = data_in, smoo_val = smooth_val, NA_restore = TRUE)
     }
+    return(data_out)
   }
 
   data_in <- apply(data_in, 2, my_loess_NA_restore)
@@ -199,12 +200,18 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
 
   if(add_st_num){
     if(!no_col){
+      hig_st_gap <- paste0(rep(" ", nchar(length(st_hig_nu)) + 2), collapse = "")
+      mid_st_gap <- paste0(rep(" ", nchar(length(st_mid_nu)) + 2), collapse = "")
+      low_st_gap <- paste0(rep(" ", nchar(length(st_low_nu)) + 2), collapse = "")
+      
       mtext(paste0(length(st_low_nu)), col="red3",  side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0(length(st_hig_nu), " ","    ", " ", "    "),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0("    ", ":",length(st_mid_nu), ":", "    "),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
-      }else{
+      mtext(paste0(length(st_hig_nu), " ", mid_st_gap, " ", low_st_gap),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(hig_st_gap , ":", length(st_mid_nu), ":", low_st_gap),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
+    }else{
       mtext(paste0(length(st_all_nu)), col="grey30",  side=3, line=.7, adj=1, padj=1, cex=.8)
-      }
+    }
   }
 }
+
+
 
