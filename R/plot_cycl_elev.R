@@ -200,18 +200,16 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
 
   if(add_st_num){
     if(!no_col){
-      hig_st_gap <- paste0(rep(" ", nchar(length(st_hig_nu)) + 2), collapse = "")
-      mid_st_gap <- paste0(rep(" ", nchar(length(st_mid_nu)) + 2), collapse = "")
+      hig_st_gap <- paste0(rep(" ", nchar(length(st_hig_nu)) + 3), collapse = "")
+      mid_st_gap <- paste0(rep(" ", nchar(length(st_mid_nu)) + 4), collapse = "")
       low_st_gap <- paste0(rep(" ", nchar(length(st_low_nu)) + 2), collapse = "")
       
-      mtext(paste0(length(st_low_nu)), col="red3",  side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0(length(st_hig_nu), " ", mid_st_gap, " ", low_st_gap),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0(hig_st_gap , ":", length(st_mid_nu), ":", low_st_gap),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
-    }else{
+      mtext(paste0(hig_st_gap, " ", mid_st_gap, " ", length(st_low_nu)), col="red3",  side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(length(st_hig_nu), " :", mid_st_gap, " ", low_st_gap),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(hig_st_gap , " ", length(st_mid_nu), " :", low_st_gap),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
+    
+      }else{
       mtext(paste0(length(st_all_nu)), col="grey30",  side=3, line=.7, adj=1, padj=1, cex=.8)
     }
   }
 }
-
-
-
