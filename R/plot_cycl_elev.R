@@ -99,8 +99,8 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   data_in <- apply(data_in, 2, my_loess_NA_restore)
 
   #Positions ticks and labels for x-axis
-  x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
-  x_axis_tic <- c(15,46,74,105,135,166,196,227,258,288,319,349,380)-15
+  x_axis_lab <- c(16,46,74,105,135,166,196,227,258,288,319,349)
+  x_axis_tic <- c(16,46,74,105,135,166,196,227,258,288,319,349,380)-15
 
   #Plot: Yearly cycle
   par(mar = margins_1)
@@ -158,11 +158,11 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
 
   pardat <- par()
   #col2rgb("blue3")
-  my_blu <- rgb(0, 0, 205, max=255, alpha = 80)
+  my_blu <- rgb(0, 0, 205, max=255, alpha = 60)
   #col2rgb("red3")
-  my_red <- rgb(205, 0, 0, max=255, alpha = 80)
+  my_red <- rgb(205, 0, 0, max=255, alpha = 60)
   #col2rgb("black")
-  my_bla <- rgb(0, 0, 0,   max=255, alpha = 60)
+  my_bla <- rgb(0, 0, 0,   max=255, alpha = 40)
   #col2rgb("grey")
   my_gre <- rgb(190, 190, 190,   max=255, alpha = 60)
 
@@ -200,13 +200,13 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
 
   if(add_st_num){
     if(!no_col){
-      hig_st_gap <- paste0(rep(" ", nchar(length(st_hig_nu)) + 3), collapse = "")
+      hig_st_gap <- paste0(rep(" ", nchar(length(st_hig_nu)) + 4), collapse = "")
       mid_st_gap <- paste0(rep(" ", nchar(length(st_mid_nu)) + 4), collapse = "")
       low_st_gap <- paste0(rep(" ", nchar(length(st_low_nu)) + 3), collapse = "")
       
-      mtext(paste0(hig_st_gap, " ", mid_st_gap, " ", length(st_low_nu)), col="red3",  side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0(length(st_hig_nu), " :", mid_st_gap, " ", low_st_gap),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
-      mtext(paste0(hig_st_gap , " ", length(st_mid_nu), " :", low_st_gap),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(hig_st_gap, "", mid_st_gap, "", length(st_low_nu)), col="red3",  side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(length(st_hig_nu), " : ", mid_st_gap, "", low_st_gap),  col="blue3", side=3, line=.7, adj=1, padj=1, cex=.8)
+      mtext(paste0(hig_st_gap , "", length(st_mid_nu), " :", low_st_gap),  col="black", side=3, line=.7, adj=1, padj=1, cex=.8)
     
       }else{
       mtext(paste0(length(st_all_nu)), col="grey30",  side=3, line=.7, adj=1, padj=1, cex=.8)

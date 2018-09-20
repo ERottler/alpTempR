@@ -3,10 +3,9 @@
 #Data visualization
 
 ###
-library("zoo")
-library("RColorBrewer")
-library("alptempr")
-library("shape")
+
+pacman::p_load(alptempr, zoo, modifiedmk, zyp, shape, foreach, 
+               parallel, doParallel, pbapply, RColorBrewer)
 
 base_dir <- "u:/RhineFlow/Elevation/Data/"
 
@@ -14,11 +13,11 @@ stat_meta <- read.table(paste0(base_dir,"rawData/IDAweb/stationMeta.csv"), sep="
 
 #cycl_elev_mea----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 7.09, height = 8)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 7.09, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 7.09, height = 8,
-    units = "in", res = 800)
+# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 7.09, height = 8,
+#     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -74,11 +73,11 @@ dev.off()
 
 #cycl_elev_slo----
 
-# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 7.09, height = 8)
+pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 7.09, height = 8)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 7.09, height = 8,
-     units = "in", res = 800)
+# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 7.09, height = 8,
+#      units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -318,9 +317,9 @@ dev.off()
 
 #wtc_gwt_26####
 
-# pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 7.09, height = 4)
-tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 7.09, height = 4,
-     units = "in", res = 800)
+pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 7.09, height = 4)
+# tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 7.09, height = 4,
+#      units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
 par(family = "serif")
@@ -468,6 +467,162 @@ mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
 
 
 dev.off()
+
+#wtc_gwt_26_new----
+
+pdf(paste0("u:/RhineFlow/Elevation/gwt_26_reg.pdf"), width = 7.09, height = 4.5)
+
+par(oma = c(0,0,0,0))
+par(family = "serif")
+par(mar = c(1.8, 2.5, 1.5, 0.5))
+layout(matrix(c(1, 3, 1, 2, 1, 2, 1, 4), 2, 4), widths=c(1, 1, 1, 1), heights=c(1.35, 1))
+gap_lenght <- 2
+lwd_bar <- 2.5
+gaps_wtc_plot <- 0:25 * gap_lenght
+y_lim <- c(min_na(gwt_sums_tem0_low) - 30, max_na(gwt_sums_tem0_hig) + 60)
+x_lim <- c(-0.5,(4 * 26 + gap_lenght*25) + gap_lenght - 0.5)
+#col2rgb("blue3")
+my_blu     <- rgb(0, 0, 205, max=255, alpha = 255)
+my_blu_rec <- rgb(0, 0, 205, max=255, alpha = 40)
+#col2rgb("red3")
+my_red     <- rgb(205, 0, 0, max=255, alpha = 255)
+my_red_rec <- rgb(205, 0, 0, max=255, alpha = 40)
+#col2rgb("black")
+col2rgb("grey20")
+my_bla <- rgb(50, 50, 50,   max=255, alpha = 220)
+
+plot(((1:26) * 4 - 3) + gaps_wtc_plot, wtc_score_regis[, 1], type = "n", col = my_blu, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+
+rect(xleft = -0.5, ybottom = min_na(gwt_sums_tem0_low) - 30, 
+     xright = (8 * 4) + gaps_wtc_plot[8] + 1.5,
+     ytop =  max_na(gwt_sums_tem0_hig) + 60, col = my_blu_rec, border = NA, lwd = 1)
+
+rect(xleft = (9 * 4) + gaps_wtc_plot[8] - 2.5, ybottom = min_na(gwt_sums_tem0_low) - 30, 
+     xright = (16 * 4) + gaps_wtc_plot[16] + 1.5,
+     ytop =  max_na(gwt_sums_tem0_hig) + 60, col = my_red_rec, border = NA, lwd = 1)
+
+rect(xleft = (25 * 4) + gaps_wtc_plot[24] - 2.5, ybottom = min_na(gwt_sums_tem0_low) - 30, 
+     xright = (25 * 4) + gaps_wtc_plot[25] + 1.5,
+     ytop =  max_na(gwt_sums_tem0_hig) + 60, col = my_blu_rec, border = NA, lwd = 1)
+
+rect(xleft = (26 * 4) + gaps_wtc_plot[25] - 2.5, ybottom = min_na(gwt_sums_tem0_low) - 30, 
+     xright = (26 * 4) + gaps_wtc_plot[26] + 1.5,
+     ytop =  max_na(gwt_sums_tem0_hig) + 60, col = my_red_rec, border = NA, lwd = 1)
+
+par(new = T)
+#Low GWTs
+plot(((1:26) * 4 - 3) + gaps_wtc_plot, wtc_score_regis[, 1], type = "h", col = my_blu, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 2) + gaps_wtc_plot, wtc_score_regis[, 4], type = "h", col = my_blu, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 1) + gaps_wtc_plot, wtc_score_regis[, 7], type = "h", col = my_blu, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 0) + gaps_wtc_plot, wtc_score_regis[, 10], type = "h", col = my_blu, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+#High GWTs
+plot(((1:26) * 4 - 3) + gaps_wtc_plot, wtc_score_regis[, 2], type = "h", col = my_red, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 2) + gaps_wtc_plot, wtc_score_regis[, 5], type = "h", col = my_red, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 1) + gaps_wtc_plot, wtc_score_regis[, 8], type = "h", col = my_red, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 0) + gaps_wtc_plot, wtc_score_regis[, 11], type = "h", col = my_red, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+#Net GWTs
+plot(((1:26) * 4 - 3) + gaps_wtc_plot, wtc_score_regis[, 3], type = "h", col = my_bla, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 2) + gaps_wtc_plot, wtc_score_regis[, 6], type = "h", col = my_bla, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 1) + gaps_wtc_plot, wtc_score_regis[, 9], type = "h", col = my_bla, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+par(new = T)
+plot(((1:26) * 4 - 0) + gaps_wtc_plot, wtc_score_regis[, 12], type = "h", col = my_bla, lwd = lwd_bar, lend = 2,
+     xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
+     ylim = y_lim, xlim = x_lim)
+
+axis(1, at = c(-0.5, ((1:26) * 4 + 1.5) + gaps_wtc_plot), labels = rep("", 27), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = ((1:26) * 4) + gaps_wtc_plot -1.5, labels = 1:26, tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 1)
+axis(2, mgp = c(3, 0.3, 0), tck = -0.015, cex.axis = 1)
+abline(h = 0, lty = "dashed", lwd = 0.7)
+abline(v = c(8, 16, 24) * 4 + 1.5 + gaps_wtc_plot[c(8, 16, 24)], lty = "dashed", lwd = 0.7)
+mtext("a) WTE scoring",    side = 3, line = 0.2,                   cex = 1.0)
+mtext("WTE score",    side = 2, line = 2,                padj = 1, cex = 0.8)
+mtext("cyclonic",     side = 3, line = -1.8, adj = 0.12, padj = 1, cex = 0.8)
+mtext("anticyclonic", side = 1, line = -3.3, adj = 0.45, padj = 1, cex = 0.8)
+mtext("indifferent",  side = 3, line = -1.8, adj = 0.79, padj = 1, cex = 0.8)
+mtext("low pressure", side = 4, line = -4.2, adj = 0.94, padj = 1, cex = 0.8)
+mtext("high press.",  side = 4, line = -2.3, adj = 0.05, padj = 1, cex = 0.8)
+box(lwd = 1.2)
+
+directs <- rep(c("W", "SW", "NW", "N", "NE", "E", "SE", "S"), 3)
+pos_labs <- ((1:26) * 4 - 1.5) + gaps_wtc_plot
+for (i in 1:8){
+  mtext(text = directs[i], at = pos_labs[i], cex = 0.7, side = 3, line = - 1.2)
+}
+for (i in 9:16){
+  mtext(text = directs[i], at = pos_labs[i], cex = 0.7, side = 1, line = - 1.2)
+}
+for (i in 17:24){
+  mtext(text = directs[i], at = pos_labs[i], cex = 0.7, side = 3, line = - 1.2)
+}
+
+#Plot b: WTE index
+
+par(mar = c(1, 2.5, 1.5, 0.1))
+
+x_axis_lab <- c(16,46,74,105,135,166,196,227,258,288,319,349)
+x_axis_tic <- c(16,46,74,105,135,166,196,227,258,288,319,349,380)-15
+
+plot(gwt_tem0_high, type = "n", main ="",
+     ylim = c(gwt_min, gwt_max),
+     ylab = "", xlab = "", axes = F)
+lines(loess_NA_restore(gwt_tem0_low),  col = my_blu, lwd = 2)
+lines(loess_NA_restore(gwt_tem0_high), col = my_red, lwd = 2)
+lines(loess_NA_restore(gwt_tem0_high) - loess_NA_restore(gwt_tem0_low), col = "black", lwd = 2)
+axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
+     col="black", col.axis="black", tck=-0.04)#plot ticks
+axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
+     col = "black", col.axis = "black", mgp = c(3, 0.0, 0), cex.axis = 1)
+axis(2, mgp = c(3, 0.3, 0), tck = -0.015, cex.axis = 1)
+abline(h = 0, lty = "dashed", lwd = 0.9)
+abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
+mtext("b) WTE index",               side = 3, line = 0.2, cex = 1.0)
+mtext("Trend window prob. [%/dec]", side = 2, line = 2,                padj = 1, cex = 0.8)
+legend("topleft", c("                    ","                    "), cex = 0.8, box.col = "white", bg = "white", adj = 0.2)
+mtext("warm GWTs", side = 3, line = -0.4, padj = 1, adj = 0.02, cex = 0.7, col = my_red)
+mtext("cold GWTs", side = 3, line = -1.1, padj = 1, adj = 0.02, cex = 0.7, col = my_blu)
+mtext("WTE index",  side = 3, line = -1.8, padj = 1, adj = 0.02, cex = 0.7, col = "black")
+box()
+
+
+
+dev.off()
+
 
 #seas_vals_category####
 
@@ -743,3 +898,30 @@ plot_cycl_elev(data_in = tem0_sl, data_mk = tem0_mk, data_in_me = tem0_sl_an,
 mtext("Temperature [°C/dec]", side = 3, line = .3, cex = 1.2)
 
 dev.off()
+#wtc_rev----
+f_sl <- function(data_in){moving_analys(dates = date_data, values= data_in,
+                                        start_year = start_year,
+                                        end_year = end_year,
+                                        window_width = window_width,
+                                        cover_thres = cover_thres,
+                                        method_analys = "sens_slope")}
+
+tem0_4_gwt_slo <- f_sl(tem0_4_gwt)
+ahum_4_gwt_slo <- f_sl(ahum_4_gwt)
+
+tem0_wte_index <- gwt_tem0_high - gwt_tem0_low
+ahum_wte_index <- gwt_ahum_high - gwt_ahum_low
+
+plot(tem0_4_gwt_slo, type = "l")
+par(new = T)
+plot(tem0_wte_index, col = "red", type = "l")
+cor(tem0_4_gwt_slo, tem0_wte_index, method = "pearson")
+
+plot(ahum_4_gwt_slo, type = "l")
+par(new = T)
+plot(ahum_wte_index, col = "red", type = "l")
+cor(ahum_4_gwt_slo, ahum_wte_index, method = "pearson")
+
+
+
+
