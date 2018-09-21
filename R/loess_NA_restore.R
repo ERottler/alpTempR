@@ -7,7 +7,7 @@
 #' @param NA_restore Restore NAs yes or no (T or F)
 #' @return Smoothed vector.
 #' @export
-loess_NA_restore <- function(data_in, smoo_val = 0.2, NA_restore = TRUE){
+loess_NA_restore <- function(data_in, smoo_val = 0.1, NA_restore = TRUE){
 
   #find NAs
   NAs <- which(is.na(data_in))

@@ -21,9 +21,9 @@
 #' annual averages (right panel)
 #' @export
 plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = "",
-                           margins_1 = c(1.4,1.8,1.8,0.2), margins_2 = c(1.4,0.2,1.8,3.5),
+                           margins_1 = c(1.3, 1.5, 1.8, 0.2), margins_2 = c(1.3, 0.2, 1.8, 3),
                            no_col = F, show_mk = F, aggr_cat_mean = F,with_hom_dat=F,
-                           smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T){
+                           smooth_val = 0.1, mk_sig_level = 0.05, add_st_num = T){
 
   #Get station IDs
   stat_meta_sel <- data_meta[which(data_meta$stn %in% colnames(data_in)), ]
@@ -137,14 +137,14 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   if(!all(is.na(cyc_LS))){lines(my_loess_NA_restore(cyc_LS), lwd = 1.6, col = col_LS)}
   abline(h = 0, lty = "dashed", lwd = 0.9)
   abline(v = x_axis_tic, lty = "dashed", lwd = 0.9)
-  axis(2, mgp = c(3, 0.5, 0), tck = -0.04)
+  axis(2, mgp = c(3, 0.12, 0), tck = -0.025)
   box(lwd = 1)
   mtext(main_text, side = 3, line = 1, padj = 1, at = 385, cex = 1)
 
   axis(1, at = x_axis_tic, c("","","","","","","","","","","","",""), tick = TRUE,
-       col="black", col.axis="black", tck=-0.04)#plot ticks
+       col="black", col.axis="black", tck=-0.06)#plot ticks
   axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
-       col = "black", col.axis = "black", mgp = c(3, 0.3, 0))
+       col = "black", col.axis = "black", mgp = c(3, 0.15, 0))
 
   #Mean vs. Elevation
   par(mar = margins_2)
@@ -152,9 +152,9 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   plot(1, 1, type="n", ylim=c(min_na(data_meta$alt)-100, max_na(data_meta$alt)+100),
        xlim=c(min(data_in_me, na.rm=T), max(data_in_me, na.rm=T)), axes=F, xlab="", ylab="",
        main="")
-  axis(1, mgp = c(3, 0.3, 0), tck = -0.04)
-  axis(4, mgp = c(3, 0.4, 0), tck = -0.04)
-  mtext("Elevation [m]",4, 1.8, cex=0.9, tck=-0.03)
+  axis(1, mgp = c(3, 0.12, 0), tck = -0.025)
+  axis(4, mgp = c(3, 0.12, 0), tck = -0.025)
+  mtext("Elevation [m]", side = 4, line = 1.5, cex = 0.9, tck = -0.03)
 
   pardat <- par()
   #col2rgb("blue3")

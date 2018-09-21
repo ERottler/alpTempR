@@ -27,7 +27,7 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
   data_in <- order_add_stat(data_in, meta_stat = stat_meta)
 
   #Positions ticks and labels for x-axis
-  x_axis_lab <- c(15,46,74,105,135,166,196,227,258,288,319,349)
+  x_axis_lab <- c(16,46,74,105,135,166,196,227,258,288,319,349)
   x_axis_tic <- c(   46,74,105,135,166,196,227,258,288,319,349)-15
 
   y <- 1:ncol(data_in)
@@ -52,15 +52,15 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
   stat_ticks <- c(low_stat_num + 0.5, low_stat_num + mid_stat_num + 0.5,
                   low_stat_num + mid_stat_num + hig_stat_num + 0.5)
 
-  axis(2, at = stat_ticks, labels = c("","",""), mgp = c(3, 0.3, 0))
-  mtext("LS", 2, 0.1, adj = pos_ylab_lal[1], cex = 0.7)
-  mtext("MS", 2, 0.1, adj = pos_ylab_lal[2], cex = 0.7)
-  mtext("HS", 2, 0.1, adj = pos_ylab_lal[3], cex = 0.7)
+  axis(2, at = stat_ticks, labels = c("","",""), mgp = c(3, 0.3, 0), tck = -0.06)
+  mtext("LS", side = 2, line = 0.15, adj = pos_ylab_lal[1], cex = 0.7)
+  mtext("MS", side = 2, line = 0.15, adj = pos_ylab_lal[2], cex = 0.7)
+  mtext("HS", side = 2, line = 0.15, adj = pos_ylab_lal[3], cex = 0.7)
 
   axis(1, at = x_axis_tic, c("","","","","","","","","","",""), tick = TRUE,
-       col = "black", col.axis = "black", tck = -0.03)#plot ticks
+       col = "black", col.axis = "black", tck = -0.06)#plot ticks
   axis(1, at = x_axis_lab, c("J","F","M","A","M","J","J","A","S","O","N","D"), tick = FALSE,
-       col="black", col.axis="black", mgp=c(3, 0.3, 0))#plot labels
+       col="black", col.axis="black", mgp=c(3, 0.15, 0))#plot labels
   mtext("Stations (increasing elevation)", 2, 1.2, cex = 0.7)
   mtext(main, 3, 0.1, adj = 0.5, cex = 1)
   box()
@@ -68,7 +68,7 @@ image_cycle_elev <- function(data_in, stat_meta, colors, breaks, main="", unit="
   par(mar= margins_2)
 
   image_scale(as.matrix(data_in), col = colors, breaks = breaks, horiz=F, ylab="", xlab="", yaxt="n", axes=F)
-  axis(4, mgp=c(3, 0.3, 0))
+  axis(4, mgp=c(3, 0.15, 0), tck = -0.08)
   box()
 
 }

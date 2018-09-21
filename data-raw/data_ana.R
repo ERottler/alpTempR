@@ -77,69 +77,69 @@ f_mk_sn <- function(data_in){moving_analys(dates = date_data, values= data_in,
                                              cover_thres = cover_thres,
                                              method_analys = "snow_window_likeli_mk")}
 
-#Meteo Calc----
+#Meteo_Calc----
 
 #calculate trend magnitude using Sen's Slope (per decade)
 #only keep stations which had sufficient data coverage
 tem0_sl <- foreach(i = 2:ncol(tem0_data), .combine = 'cbind') %dopar% {
   
-  f_sl(tem0_data[, i])
+  f_sl(tem0_data[, i]) * 10 #[°C/dec]
   
 }
 colnames(tem0_sl) <- colnames(tem0_data)[-1] ; tem0_sl <- as.data.frame(stat_coverage(tem0_sl))
 
 temx_sl <- foreach(i = 2:ncol(temx_data), .combine = 'cbind') %dopar% {
   
-  f_sl(temx_data[, i])
+  f_sl(temx_data[, i]) * 10 #[°C/dec]
   
 }
 colnames(temx_sl) <- colnames(temx_data)[-1] ; temx_sl <- as.data.frame(stat_coverage(temx_sl))
 
 temn_sl <- foreach(i = 2:ncol(temn_data), .combine = 'cbind') %dopar% {
   
-  f_sl(temn_data[, i])
+  f_sl(temn_data[, i]) * 10 #[°C/dec]
   
 }
 colnames(temn_sl) <- colnames(temn_data)[-1] ; temn_sl <- as.data.frame(stat_coverage(temn_sl))
 
 suns_sl <- foreach(i = 2:ncol(suns_data), .combine = 'cbind') %dopar% {
   
-  f_sl(suns_data[, i])
+  f_sl(suns_data[, i]) * 10 #[min/dec]
   
 }
 colnames(suns_sl) <- colnames(suns_data)[-1] ; suns_sl <- as.data.frame(stat_coverage(suns_sl))
 
 radi_sl <- foreach(i = 2:ncol(radi_data), .combine = 'cbind') %dopar% {
   
-  f_sl(radi_data[, i])
+  f_sl(radi_data[, i]) * 10 #[W/m²/dec]
   
 }
 colnames(radi_sl) <- colnames(radi_data)[-1] ; radi_sl <- as.data.frame(stat_coverage(radi_sl))
 
 clou_sl <- foreach(i = 2:ncol(clou_data), .combine = 'cbind') %dopar% {
   
-  f_sl(clou_data[, i])
+  f_sl(clou_data[, i]) * 10 #[%/dec]
   
 }
 colnames(clou_sl) <- colnames(clou_data)[-1] ; clou_sl <- as.data.frame(stat_coverage(clou_sl))
 
 ahum_sl <- foreach(i = 2:ncol(ahum_data), .combine = 'cbind') %dopar% {
   
-  f_sl(ahum_data[, i])
+  f_sl(ahum_data[, i]) * 10 #[g/cm³/dec]
   
 }
 colnames(ahum_sl) <- colnames(ahum_data)[-1] ; ahum_sl <- as.data.frame(stat_coverage(ahum_sl))
 
 airp_sl <- foreach(i = 2:ncol(airp_data), .combine = 'cbind') %dopar% {
   
-  f_sl(airp_data[, i])
+  f_sl(airp_data[, i]) * 10 #[hPa/dec]
   
 }
 colnames(airp_sl) <- colnames(airp_data)[-1] ; airp_sl <- as.data.frame(stat_coverage(airp_sl))
 
 snow_sl <- foreach(i = 2:ncol(snow_data), .combine = 'cbind') %dopar% {
   
-  f_sl_sn(snow_data[, i])
+  f_sl_sn(snow_data[, i]) * 10 * 100 #[%/dec]
   
 }
 colnames(snow_sl) <- colnames(snow_data)[-1] ; snow_sl <- as.data.frame(stat_coverage(snow_sl))
@@ -357,6 +357,10 @@ stats_data <- unique(c(colnames(tem0_sl),colnames(temx_sl),colnames(temx_sl),
 
 stats_data[which(!stats_data %in% stat_meta$stn)]#station in data that are not in meta data
 stat_meta$stn[which(!stat_meta$stn %in% stats_data)]#stations in meta data that are not in data
+
+#remove stations from sta_meta that are not in data
+stat_meta <- stat_meta[-which(!stat_meta$stn %in% stats_data),]
+
 
 #Get groups of stations
 st_all <- stat_meta$stn
@@ -734,11 +738,11 @@ f_wtc_score <- function(regi_sel){
   colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), regi_sel)
   
   return(gwt_score_out)
-
-
+  
+  
 }
 
-wtc_score_regis <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
+wtc_score_regis_tem0 <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
   
   f_wtc_score(clim_regions[i])
   
@@ -779,7 +783,6 @@ full_date  <- seq(start_date, end_date, by="day")
 
 data_gwt26 <- data.frame(date = full_date,
                          value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
-
 
 gwt_med <- function(dates, clim_data, gwt_data){
 
@@ -848,85 +851,104 @@ gwt_med <- function(dates, clim_data, gwt_data){
 
 }
 
-#Swiss average
-stat_cols_ahum <- which(colnames(ahum_data) %in% colnames(ahum_sl))
+#Humidity for ranking weather types
 
-ahum_use <- ahum_data[, stat_cols_ahum]
+#whole Switzerland
+# stat_cols_ahum <- which(colnames(ahum_data) %in% colnames(ahum_sl))
 
-ahum_4_gwt <- apply(ahum_use, 1, med_na)
+#selected region
+clim_regions <- c("Jura", "Plateau", "Alps", "S_Alps")
 
-ahum_4_gwt_slo <- f_sl(ahum_4_gwt)
-
-gwt_ahum <- gwt_med(dates = ahum_data$date, clim_data = ahum_4_gwt, gwt_data = data_gwt26$value)
-
-#get rank out of mean values
-
-gwt_rank_ahum <- matrix(NA, ncol = 26, nrow = 365)
-
-for (i in 1:365) {
-
-  gwt_ahum_sort <- sort(gwt_ahum[i, ])
-
-  if(length(gwt_ahum_sort) > 9){
-    gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:5])
-    gwt_warm <- as.numeric(names(gwt_ahum_sort)[(length(gwt_ahum_sort)-5) : length(gwt_ahum_sort)])
-  }else{
-    is.even <- function(x) {x %% 2 == 0}
-    if(is.even(length(gwt_clim_sort))){
-      gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:(length(gwt_ahum_sort) / 2)])
-      gwt_warm <- as.numeric(names(gwt_ahum_sort)[((length(gwt_ahum_sort) / 2) + 1) : length(gwt_ahum_sort)])
+f_wtc_score <- function(regi_sel){
+  
+  stat_reg_sel <- colnames(ahum_sl)[which(colnames(ahum_sl) %in% stat_meta$stn[which(stat_meta$clim_reg == regi_sel)])]
+  stat_cols_ahum <- which(colnames(ahum_data) %in% stat_reg_sel)
+  
+  ahum_use <- ahum_data[, stat_cols_ahum]
+  
+  ahum_4_gwt <- apply(ahum_use, 1, med_na)
+  
+  ahum_4_gwt_slo <- f_sl(ahum_4_gwt)
+  
+  gwt_ahum <- gwt_med(dates = ahum_data$date, clim_data = ahum_4_gwt, gwt_data = data_gwt26$value)
+  
+  #get rank out of mean values
+  num_hig_sel <- 15
+  num_low_sel <- 15
+  gwt_rank_ahum <- matrix(NA, ncol = 26, nrow = 365)
+  
+  for (i in 1:365) {
+    
+    gwt_ahum_sort <- sort(gwt_ahum[i, ])
+    # print(length(gwt_ahum_sort))
+    # gwt_ahum_sort <- gwt_ahum_sort[1:15]
+    
+    if(length(gwt_ahum_sort) > sum(num_hig_sel, num_low_sel)){
+      gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:num_low_sel])
+      gwt_warm <- as.numeric(names(gwt_ahum_sort)[(length(gwt_ahum_sort) - num_hig_sel + 1) : length(gwt_ahum_sort)])
     }else{
-      gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:(floor(length(gwt_ahum_sort) / 2))])
-      gwt_warm <- as.numeric(names(gwt_ahum_sort)[ceiling((length(gwt_ahum_sort) / 2)) : length(gwt_ahum_sort)])
+      is.even <- function(x) {x %% 2 == 0}
+      if(is.even(length(gwt_ahum_sort))){
+        gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:(length(gwt_ahum_sort) / 2)])
+        gwt_warm <- as.numeric(names(gwt_ahum_sort)[((length(gwt_ahum_sort) / 2) + 1) : length(gwt_ahum_sort)])
+      }else{
+        gwt_cold <- as.numeric(names(gwt_ahum_sort)[1:(floor(length(gwt_ahum_sort) / 2))])
+        gwt_warm <- as.numeric(names(gwt_ahum_sort)[(ceiling((length(gwt_ahum_sort) / 2)) + 1) : length(gwt_ahum_sort)])
+      }
     }
+    # gwt_rank_ahum[i, gwt_cold] <-  (-1 * length(gwt_cold)) : -1
+    # gwt_rank_ahum[i, gwt_warm] <-   1 : length(gwt_warm)
+    gwt_rank_ahum[i, gwt_cold] <-  -1
+    gwt_rank_ahum[i, gwt_warm] <-   1
+    
   }
-  gwt_rank_ahum[i, gwt_cold] <-  -1
-  gwt_rank_ahum[i, gwt_warm] <-   1
-
+  
+  #Determine driving weather types
+  f_sum_neg <- function(data_in){
+    
+    data_in[which(data_in > 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  f_sum_pos <- function(data_in){
+    
+    data_in[which(data_in < 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  gwt_sums_ahum_low <- apply(gwt_rank_ahum[ , ], 2, f_sum_neg)
+  gwt_sums_ahum_hig <- apply(gwt_rank_ahum[ , ], 2, f_sum_pos)
+  gwt_sums_ahum     <- apply(gwt_rank_ahum[ , ], 2, sum_na)
+  
+  names(gwt_sums_ahum_low) <- 1:26
+  names(gwt_sums_ahum_hig) <- 1:26
+  names(gwt_sums_ahum)     <- 1:26
+  
+  gwt_sums_ahum__low_sort <- sort(gwt_sums_ahum_low)
+  gwt_sums_ahum__hig_sort <- sort(gwt_sums_ahum_hig)
+  gwt_sums_ahum_sort      <- sort(gwt_sums_ahum)
+  
+  gwt_score_out <- cbind(gwt_sums_ahum_low, gwt_sums_ahum_hig, gwt_sums_ahum)
+  colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), regi_sel)
+  
+  return(gwt_score_out)
+  
+  
 }
 
-#Determine driving weather types
-gwt_sums_ahum <- apply(gwt_rank_ahum[,], 2, sum_na)
-
-names(gwt_sums_ahum) <- 1:26
-
-gwt_sums_ahum_sort <- sort(gwt_sums_ahum)
-
-f_sum_neg <- function(data_in){
+wtc_score_regis_ahum <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
   
-  data_in[which(data_in > 0)] <- NA
-  score_out <- sum_na(data_in)
+  f_wtc_score(clim_regions[i])
   
 }
-f_sum_pos <- function(data_in){
-  
-  data_in[which(data_in < 0)] <- NA
-  score_out <- sum_na(data_in)
-  
-}
-gwt_sums_ahum_low <- apply(gwt_rank_ahum[ , ], 2, f_sum_neg)
-gwt_sums_ahum_hig <- apply(gwt_rank_ahum[ , ], 2, f_sum_pos)
-gwt_sums_ahum     <- apply(gwt_rank_ahum[ , ], 2, sum_na)
 
-names(gwt_sums_ahum_low) <- 1:26
-names(gwt_sums_ahum_hig) <- 1:26
-names(gwt_sums_ahum)     <- 1:26
+# gwt_lows_ahum  <- 1:5
+# gwt_highs_ahum <- 21:26
+# gwt_low_ahum   <- as.numeric(names(gwt_sums_ahum_sort)[gwt_lows_ahum])
+# gwt_high_ahum  <- as.numeric(names(gwt_sums_ahum_sort)[gwt_highs_ahum])
 
-gwt_sums_ahum__low_sort <- sort(gwt_sums_ahum_low)
-gwt_sums_ahum__hig_sort <- sort(gwt_sums_ahum_hig)
-gwt_sums_ahum_sort      <- sort(gwt_sums_ahum)
-
-plot(gwt_sums_ahum_low, type = "h", col = "blue3")
-plot(gwt_sums_ahum_hig, type = "h", col = "red")
-plot(gwt_sums_ahum, type = "h", col = "black")
-
-
-
-gwt_lows_ahum  <- 1:4
-gwt_highs_ahum <- 23:26
-
-gwt_low_ahum   <- as.numeric(names(gwt_sums_ahum_sort)[gwt_lows_ahum])
-gwt_high_ahum  <- as.numeric(names(gwt_sums_ahum_sort)[gwt_highs_ahum])
+gwt_low_ahum <- c(1,2,3,4,5,6,19,20,21,25)
+gwt_high_ahum <- c(9,10,11,15,16,17,18,23,24,26)
 
 #Calculate changes in frequencies
 gwt_ahum_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
@@ -938,9 +960,6 @@ gwt_ahum_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$valu
                                end_year = end_year, window_width = window_width,
                                cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
                                weather_type = gwt_low_ahum)*100*10 # [%/dec]
-
-
-
 
 
 #WTC_number_cor_tem0----
