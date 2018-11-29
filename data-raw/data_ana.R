@@ -20,6 +20,7 @@ load(paste0(base_dir,"gre000d0.RData")) ; radi_data <- out_data #Global radiatio
 load(paste0(base_dir,"nto000d0.RData")) ; clou_data <- out_data #Clouds total; daily mean [%]
 load(paste0(base_dir,"hto000d0.RData")) ; snow_data <- out_data #Snow depth; measurement 05:40
 load(paste0(base_dir,"pp0qffd0.RData")) ; airp_data <- out_data #Air pressure reference sea level [hPa]
+load(paste0(base_dir,"pva200d0.RData")) ; wvap_data <- out_data #Water vapor pressure
 
 start_year   <- 1981
 end_year     <- 2017
@@ -27,7 +28,7 @@ window_width <- 30
 cover_thres  <- 32/37
 
 #Make cluster for parallel computing
-n_cores <- 50 #define number of cores used
+n_cores <- 45 #define number of cores used
 my_clust <- makeCluster(n_cores)
 clusterEvalQ(my_clust, pacman::p_load(zoo, zyp, alptempr))
 registerDoParallel(my_clust)
@@ -144,6 +145,12 @@ snow_sl <- foreach(i = 2:ncol(snow_data), .combine = 'cbind') %dopar% {
 }
 colnames(snow_sl) <- colnames(snow_data)[-1] ; snow_sl <- as.data.frame(stat_coverage(snow_sl))
 
+wvap_sl <- foreach(i = 2:ncol(wvap_data), .combine = 'cbind') %dopar% {
+  
+  f_sl(wvap_data[, i]) * 10 * 100 #[%/dec]
+  
+}
+colnames(wvap_sl) <- colnames(wvap_data)[-1] ; wvap_sl <- as.data.frame(stat_coverage(wvap_sl))
 
 # tem0_sl <- as.data.frame(apply(tem0_data[, -1], 2 , f_sl))*10 ; tem0_sl <- stat_coverage(tem0_sl)
 # temx_sl <- as.data.frame(apply(temx_data[, -1], 2 , f_sl))*10 ; temx_sl <- stat_coverage(temx_sl)
@@ -574,7 +581,7 @@ cbind(as.character(stat_meta$name), data_avail)
 #    base_dir)
 
 
-#WTC_GWT_26_tem0####
+#WTC_GWT_26_tem0_regis####
 gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
                          sep = ";", skip = 1, header = TRUE, na.strings = "-")
 
@@ -960,6 +967,802 @@ gwt_ahum_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$valu
                                end_year = end_year, window_width = window_width,
                                cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
                                weather_type = gwt_low_ahum)*100*10 # [%/dec]
+
+
+#WTC_GWT_26_suns####
+gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
+                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+gwt26_data$time <- as.POSIXct(strptime(gwt26_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_gwt26 <- data.frame(date = full_date,
+                         value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
+
+gwt_med <- function(dates, clim_data, gwt_data){
+  
+  input_data <- data.frame(dates = dates,
+                           clim = clim_data,
+                           gwt = gwt_data)
+  
+  
+  #Remove 29th of February
+  input_data <- input_data[-which(format(input_data$dates, "%m%d") == "0229"),]
+  
+  #Vector with the 365 days of the year
+  days <- seq(as.Date('2014-01-01'), to=as.Date('2014-12-31'), by='days')
+  days <- format(days,"%m-%d")
+  
+  #Order climate data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$clim[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_clim <- data_day
+  
+  #Order gwt data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$gwt[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_gwt <- data_day
+  
+  
+  for(k in 1:26){
+    
+    for (i in 2:ncol(data_day_clim)) {
+      
+      gwt_days <- which(data_day_gwt[, i] == k)
+      gwt_days_med <- median(data_day_clim[gwt_days, i])
+      
+      if(i == 2){
+        gwt_med <- gwt_days_med
+      }else
+        gwt_med <- c(gwt_med, gwt_days_med)
+    }
+    
+    if(k ==1){
+      gwt_out <- gwt_med
+    }else{
+      gwt_out <- cbind(gwt_out, gwt_med)
+    }
+    
+  }
+  
+  colnames(gwt_out) <- 1:26
+  return(gwt_out)
+  
+}
+
+#Humidity for ranking weather types
+
+#whole Switzerland
+# stat_cols_suns <- which(colnames(suns_data) %in% colnames(suns_sl))
+
+#selected region
+clim_regions <- c("Jura", "Plateau", "Alps", "S_Alps")
+
+f_wtc_score <- function(regi_sel){
+  
+  stat_reg_sel <- colnames(suns_sl)[which(colnames(suns_sl) %in% stat_meta$stn[which(stat_meta$clim_reg == regi_sel)])]
+  stat_cols_suns <- which(colnames(suns_data) %in% stat_reg_sel)
+  
+  suns_use <- suns_data[, stat_cols_suns]
+  
+  suns_4_gwt <- apply(suns_use, 1, med_na)
+  
+  suns_4_gwt_slo <- f_sl(suns_4_gwt)
+  
+  gwt_suns <- gwt_med(dates = suns_data$date, clim_data = suns_4_gwt, gwt_data = data_gwt26$value)
+  
+  #get rank out of mean values
+  num_hig_sel <- 15
+  num_low_sel <- 15
+  gwt_rank_suns <- matrix(NA, ncol = 26, nrow = 365)
+  
+  for (i in 1:365) {
+    
+    gwt_suns_sort <- sort(gwt_suns[i, ])
+    # print(length(gwt_suns_sort))
+    # gwt_suns_sort <- gwt_suns_sort[1:15]
+    
+    if(length(gwt_suns_sort) > sum(num_hig_sel, num_low_sel)){
+      gwt_cold <- as.numeric(names(gwt_suns_sort)[1:num_low_sel])
+      gwt_warm <- as.numeric(names(gwt_suns_sort)[(length(gwt_suns_sort) - num_hig_sel + 1) : length(gwt_suns_sort)])
+    }else{
+      is.even <- function(x) {x %% 2 == 0}
+      if(is.even(length(gwt_suns_sort))){
+        gwt_cold <- as.numeric(names(gwt_suns_sort)[1:(length(gwt_suns_sort) / 2)])
+        gwt_warm <- as.numeric(names(gwt_suns_sort)[((length(gwt_suns_sort) / 2) + 1) : length(gwt_suns_sort)])
+      }else{
+        gwt_cold <- as.numeric(names(gwt_suns_sort)[1:(floor(length(gwt_suns_sort) / 2))])
+        gwt_warm <- as.numeric(names(gwt_suns_sort)[(ceiling((length(gwt_suns_sort) / 2)) + 1) : length(gwt_suns_sort)])
+      }
+    }
+    # gwt_rank_suns[i, gwt_cold] <-  (-1 * length(gwt_cold)) : -1
+    # gwt_rank_suns[i, gwt_warm] <-   1 : length(gwt_warm)
+    gwt_rank_suns[i, gwt_cold] <-  -1
+    gwt_rank_suns[i, gwt_warm] <-   1
+    
+  }
+  
+  #Determine driving weather types
+  f_sum_neg <- function(data_in){
+    
+    data_in[which(data_in > 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  f_sum_pos <- function(data_in){
+    
+    data_in[which(data_in < 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  gwt_sums_suns_low <- apply(gwt_rank_suns[ , ], 2, f_sum_neg)
+  gwt_sums_suns_hig <- apply(gwt_rank_suns[ , ], 2, f_sum_pos)
+  gwt_sums_suns     <- apply(gwt_rank_suns[ , ], 2, sum_na)
+  
+  names(gwt_sums_suns_low) <- 1:26
+  names(gwt_sums_suns_hig) <- 1:26
+  names(gwt_sums_suns)     <- 1:26
+  
+  gwt_sums_suns__low_sort <- sort(gwt_sums_suns_low)
+  gwt_sums_suns__hig_sort <- sort(gwt_sums_suns_hig)
+  gwt_sums_suns_sort      <- sort(gwt_sums_suns)
+  
+  gwt_score_out <- cbind(gwt_sums_suns_low, gwt_sums_suns_hig, gwt_sums_suns)
+  colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), regi_sel)
+  
+  return(gwt_score_out)
+  
+  
+}
+
+wtc_score_regis_suns <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
+  
+  f_wtc_score(clim_regions[i])
+  
+}
+
+# gwt_lows_suns  <- 1:5
+# gwt_highs_suns <- 21:26
+# gwt_low_suns   <- as.numeric(names(gwt_sums_suns_sort)[gwt_lows_suns])
+# gwt_high_suns  <- as.numeric(names(gwt_sums_suns_sort)[gwt_highs_suns])
+
+gwt_low_suns <- c(1,2,3,4,5,6,19,20,21,25)
+gwt_high_suns <- c(9,10,11,15,16,17,18,23,24,26)
+
+#Calculate changes in frequencies
+gwt_suns_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_high_suns)*100*10# [%/dec]
+
+gwt_suns_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_low_suns)*100*10 # [%/dec]
+
+
+#WTC_GWT_26_radi####
+gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
+                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+gwt26_data$time <- as.POSIXct(strptime(gwt26_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_gwt26 <- data.frame(date = full_date,
+                         value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
+
+gwt_med <- function(dates, clim_data, gwt_data){
+  
+  input_data <- data.frame(dates = dates,
+                           clim = clim_data,
+                           gwt = gwt_data)
+  
+  
+  #Remove 29th of February
+  input_data <- input_data[-which(format(input_data$dates, "%m%d") == "0229"),]
+  
+  #Vector with the 365 days of the year
+  days <- seq(as.Date('2014-01-01'), to=as.Date('2014-12-31'), by='days')
+  days <- format(days,"%m-%d")
+  
+  #Order climate data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$clim[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_clim <- data_day
+  
+  #Order gwt data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$gwt[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_gwt <- data_day
+  
+  
+  for(k in 1:26){
+    
+    for (i in 2:ncol(data_day_clim)) {
+      
+      gwt_days <- which(data_day_gwt[, i] == k)
+      gwt_days_med <- median(data_day_clim[gwt_days, i])
+      
+      if(i == 2){
+        gwt_med <- gwt_days_med
+      }else
+        gwt_med <- c(gwt_med, gwt_days_med)
+    }
+    
+    if(k ==1){
+      gwt_out <- gwt_med
+    }else{
+      gwt_out <- cbind(gwt_out, gwt_med)
+    }
+    
+  }
+  
+  colnames(gwt_out) <- 1:26
+  return(gwt_out)
+  
+}
+
+#Humidity for ranking weather types
+
+#whole Switzerland
+# stat_cols_radi <- which(colnames(radi_data) %in% colnames(radi_sl))
+
+#selected region
+clim_regions <- c("Jura", "Plateau", "Alps", "S_Alps")
+
+f_wtc_score <- function(regi_sel){
+  
+  stat_reg_sel <- colnames(radi_sl)[which(colnames(radi_sl) %in% stat_meta$stn[which(stat_meta$clim_reg == regi_sel)])]
+  stat_cols_radi <- which(colnames(radi_data) %in% stat_reg_sel)
+  
+  radi_use <- radi_data[, stat_cols_radi]
+  
+  radi_4_gwt <- apply(radi_use, 1, med_na)
+  
+  radi_4_gwt_slo <- f_sl(radi_4_gwt)
+  
+  gwt_radi <- gwt_med(dates = radi_data$date, clim_data = radi_4_gwt, gwt_data = data_gwt26$value)
+  
+  #get rank out of mean values
+  num_hig_sel <- 15
+  num_low_sel <- 15
+  gwt_rank_radi <- matrix(NA, ncol = 26, nrow = 365)
+  
+  for (i in 1:365) {
+    
+    gwt_radi_sort <- sort(gwt_radi[i, ])
+    # print(length(gwt_radi_sort))
+    # gwt_radi_sort <- gwt_radi_sort[1:15]
+    
+    if(length(gwt_radi_sort) > sum(num_hig_sel, num_low_sel)){
+      gwt_cold <- as.numeric(names(gwt_radi_sort)[1:num_low_sel])
+      gwt_warm <- as.numeric(names(gwt_radi_sort)[(length(gwt_radi_sort) - num_hig_sel + 1) : length(gwt_radi_sort)])
+    }else{
+      is.even <- function(x) {x %% 2 == 0}
+      if(is.even(length(gwt_radi_sort))){
+        gwt_cold <- as.numeric(names(gwt_radi_sort)[1:(length(gwt_radi_sort) / 2)])
+        gwt_warm <- as.numeric(names(gwt_radi_sort)[((length(gwt_radi_sort) / 2) + 1) : length(gwt_radi_sort)])
+      }else{
+        gwt_cold <- as.numeric(names(gwt_radi_sort)[1:(floor(length(gwt_radi_sort) / 2))])
+        gwt_warm <- as.numeric(names(gwt_radi_sort)[(ceiling((length(gwt_radi_sort) / 2)) + 1) : length(gwt_radi_sort)])
+      }
+    }
+    # gwt_rank_radi[i, gwt_cold] <-  (-1 * length(gwt_cold)) : -1
+    # gwt_rank_radi[i, gwt_warm] <-   1 : length(gwt_warm)
+    gwt_rank_radi[i, gwt_cold] <-  -1
+    gwt_rank_radi[i, gwt_warm] <-   1
+    
+  }
+  
+  #Determine driving weather types
+  f_sum_neg <- function(data_in){
+    
+    data_in[which(data_in > 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  f_sum_pos <- function(data_in){
+    
+    data_in[which(data_in < 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  gwt_sums_radi_low <- apply(gwt_rank_radi[ , ], 2, f_sum_neg)
+  gwt_sums_radi_hig <- apply(gwt_rank_radi[ , ], 2, f_sum_pos)
+  gwt_sums_radi     <- apply(gwt_rank_radi[ , ], 2, sum_na)
+  
+  names(gwt_sums_radi_low) <- 1:26
+  names(gwt_sums_radi_hig) <- 1:26
+  names(gwt_sums_radi)     <- 1:26
+  
+  gwt_sums_radi__low_sort <- sort(gwt_sums_radi_low)
+  gwt_sums_radi__hig_sort <- sort(gwt_sums_radi_hig)
+  gwt_sums_radi_sort      <- sort(gwt_sums_radi)
+  
+  gwt_score_out <- cbind(gwt_sums_radi_low, gwt_sums_radi_hig, gwt_sums_radi)
+  colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), regi_sel)
+  
+  return(gwt_score_out)
+  
+  
+}
+
+wtc_score_regis_radi <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
+  
+  f_wtc_score(clim_regions[i])
+  
+}
+
+# gwt_lows_radi  <- 1:5
+# gwt_highs_radi <- 21:26
+# gwt_low_radi   <- as.numeric(names(gwt_sums_radi_sort)[gwt_lows_radi])
+# gwt_high_radi  <- as.numeric(names(gwt_sums_radi_sort)[gwt_highs_radi])
+
+gwt_low_radi <- c(1,2, 7,8, 10, 17,18, 23,24, 25)
+gwt_high_radi <- c(4,5, 11,12,13,14,15, 19,20,21,22, 26)
+
+#Calculate changes in frequencies
+gwt_radi_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_high_radi)*100*10# [%/dec]
+
+gwt_radi_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_low_radi)*100*10 # [%/dec]
+
+
+#WTC_GWT_26_wvap####
+gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
+                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+gwt26_data$time <- as.POSIXct(strptime(gwt26_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_gwt26 <- data.frame(date = full_date,
+                         value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
+
+gwt_med <- function(dates, clim_data, gwt_data){
+  
+  input_data <- data.frame(dates = dates,
+                           clim = clim_data,
+                           gwt = gwt_data)
+  
+  
+  #Remove 29th of February
+  input_data <- input_data[-which(format(input_data$dates, "%m%d") == "0229"),]
+  
+  #Vector with the 365 days of the year
+  days <- seq(as.Date('2014-01-01'), to=as.Date('2014-12-31'), by='days')
+  days <- format(days,"%m-%d")
+  
+  #Order climate data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$clim[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_clim <- data_day
+  
+  #Order gwt data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$gwt[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_gwt <- data_day
+  
+  
+  for(k in 1:26){
+    
+    for (i in 2:ncol(data_day_clim)) {
+      
+      gwt_days <- which(data_day_gwt[, i] == k)
+      gwt_days_med <- median(data_day_clim[gwt_days, i])
+      
+      if(i == 2){
+        gwt_med <- gwt_days_med
+      }else
+        gwt_med <- c(gwt_med, gwt_days_med)
+    }
+    
+    if(k ==1){
+      gwt_out <- gwt_med
+    }else{
+      gwt_out <- cbind(gwt_out, gwt_med)
+    }
+    
+  }
+  
+  colnames(gwt_out) <- 1:26
+  return(gwt_out)
+  
+}
+
+#Humidity for ranking weather types
+
+#whole Switzerland
+# stat_cols_wvap <- which(colnames(wvap_data) %in% colnames(wvap_sl))
+
+#selected region
+clim_regions <- c("Jura", "Plateau", "Alps", "S_Alps")
+
+f_wtc_score <- function(regi_sel){
+  
+  stat_reg_sel <- colnames(wvap_sl)[which(colnames(wvap_sl) %in% stat_meta$stn[which(stat_meta$clim_reg == regi_sel)])]
+  stat_cols_wvap <- which(colnames(wvap_data) %in% stat_reg_sel)
+  
+  wvap_use <- wvap_data[, stat_cols_wvap]
+  
+  wvap_4_gwt <- apply(wvap_use, 1, med_na)
+  
+  wvap_4_gwt_slo <- f_sl(wvap_4_gwt)
+  
+  gwt_wvap <- gwt_med(dates = wvap_data$date, clim_data = wvap_4_gwt, gwt_data = data_gwt26$value)
+  
+  #get rank out of mean values
+  num_hig_sel <- 15
+  num_low_sel <- 15
+  gwt_rank_wvap <- matrix(NA, ncol = 26, nrow = 365)
+  
+  for (i in 1:365) {
+    
+    gwt_wvap_sort <- sort(gwt_wvap[i, ])
+    # print(length(gwt_wvap_sort))
+    # gwt_wvap_sort <- gwt_wvap_sort[1:15]
+    
+    if(length(gwt_wvap_sort) > sum(num_hig_sel, num_low_sel)){
+      gwt_cold <- as.numeric(names(gwt_wvap_sort)[1:num_low_sel])
+      gwt_warm <- as.numeric(names(gwt_wvap_sort)[(length(gwt_wvap_sort) - num_hig_sel + 1) : length(gwt_wvap_sort)])
+    }else{
+      is.even <- function(x) {x %% 2 == 0}
+      if(is.even(length(gwt_wvap_sort))){
+        gwt_cold <- as.numeric(names(gwt_wvap_sort)[1:(length(gwt_wvap_sort) / 2)])
+        gwt_warm <- as.numeric(names(gwt_wvap_sort)[((length(gwt_wvap_sort) / 2) + 1) : length(gwt_wvap_sort)])
+      }else{
+        gwt_cold <- as.numeric(names(gwt_wvap_sort)[1:(floor(length(gwt_wvap_sort) / 2))])
+        gwt_warm <- as.numeric(names(gwt_wvap_sort)[(ceiling((length(gwt_wvap_sort) / 2)) + 1) : length(gwt_wvap_sort)])
+      }
+    }
+    # gwt_rank_wvap[i, gwt_cold] <-  (-1 * length(gwt_cold)) : -1
+    # gwt_rank_wvap[i, gwt_warm] <-   1 : length(gwt_warm)
+    gwt_rank_wvap[i, gwt_cold] <-  -1
+    gwt_rank_wvap[i, gwt_warm] <-   1
+    
+  }
+  
+  #Determine driving weather types
+  f_sum_neg <- function(data_in){
+    
+    data_in[which(data_in > 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  f_sum_pos <- function(data_in){
+    
+    data_in[which(data_in < 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  gwt_sums_wvap_low <- apply(gwt_rank_wvap[ , ], 2, f_sum_neg)
+  gwt_sums_wvap_hig <- apply(gwt_rank_wvap[ , ], 2, f_sum_pos)
+  gwt_sums_wvap     <- apply(gwt_rank_wvap[ , ], 2, sum_na)
+  
+  names(gwt_sums_wvap_low) <- 1:26
+  names(gwt_sums_wvap_hig) <- 1:26
+  names(gwt_sums_wvap)     <- 1:26
+  
+  gwt_sums_wvap__low_sort <- sort(gwt_sums_wvap_low)
+  gwt_sums_wvap__hig_sort <- sort(gwt_sums_wvap_hig)
+  gwt_sums_wvap_sort      <- sort(gwt_sums_wvap)
+  
+  gwt_score_out <- cbind(gwt_sums_wvap_low, gwt_sums_wvap_hig, gwt_sums_wvap)
+  colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), regi_sel)
+  
+  return(gwt_score_out)
+  
+  
+}
+
+wtc_score_regis_wvap <- foreach(i = 1:length(clim_regions), .combine = 'cbind') %dopar% {
+  
+  f_wtc_score(clim_regions[i])
+  
+}
+
+# gwt_lows_wvap  <- 1:5
+# gwt_highs_wvap <- 21:26
+# gwt_low_wvap   <- as.numeric(names(gwt_sums_wvap_sort)[gwt_lows_wvap])
+# gwt_high_wvap  <- as.numeric(names(gwt_sums_wvap_sort)[gwt_highs_wvap])
+
+gwt_low_wvap <- c(1,2,3,4,5,6,19,20,21,25)
+gwt_high_wvap <- c(9,10,11,15,16,17,18,23,24,26)
+
+#Calculate changes in frequencies
+gwt_wvap_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_high_wvap)*100*10# [%/dec]
+
+gwt_wvap_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_low_wvap)*100*10 # [%/dec]
+
+
+#WTC_GWT_26_tem0_elevs####
+gwt26_data <- read.table(paste0(base_dir, "rawData/IDAweb/weastat/order59752/order_59752_data.txt"),
+                         sep = ";", skip = 1, header = TRUE, na.strings = "-")
+
+gwt26_data$time <- as.POSIXct(strptime(gwt26_data$time, "%Y%m%d", tz="UTC"))
+
+start_day <- "1981-01-01"
+end_day   <- "2017-12-31"
+
+start_date <- as.POSIXct(strptime(start_day, "%Y-%m-%d", tz="UTC"))
+end_date   <- as.POSIXct(strptime(end_day,   "%Y-%m-%d", tz="UTC"))
+full_date  <- seq(start_date, end_date, by="day")
+
+data_gwt26 <- data.frame(date = full_date,
+                         value = with(gwt26_data, gwt26_data$wkwtg3d0[match(full_date, time)]))
+
+gwt_med <- function(dates, clim_data, gwt_data){
+  
+  input_data <- data.frame(dates = dates,
+                           clim = clim_data,
+                           gwt = gwt_data)
+  
+  
+  #Remove 29th of February
+  input_data <- input_data[-which(format(input_data$dates, "%m%d") == "0229"),]
+  
+  #Vector with the 365 days of the year
+  days <- seq(as.Date('2014-01-01'), to=as.Date('2014-12-31'), by='days')
+  days <- format(days,"%m-%d")
+  
+  #Order climate data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$clim[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_clim <- data_day
+  
+  #Order gwt data by day
+  data_day <-  matrix(NA, nrow = length(start_year:end_year), ncol = 366)
+  colnames(data_day) <- c("year", days)
+  data_day[ ,1] <- start_year:end_year
+  
+  for(i in 0:(length(start_year:end_year)-1)) {
+    
+    data_day[i+1, 2:366] <- input_data$gwt[(i*365+1):((i+1)*365)]
+    
+  }
+  
+  data_day_gwt <- data_day
+  
+  
+  for(k in 1:26){
+    
+    for (i in 2:ncol(data_day_clim)) {
+      
+      gwt_days <- which(data_day_gwt[, i] == k)
+      gwt_days_med <- median(data_day_clim[gwt_days, i])
+      
+      if(i == 2){
+        gwt_med <- gwt_days_med
+      }else
+        gwt_med <- c(gwt_med, gwt_days_med)
+    }
+    
+    if(k ==1){
+      gwt_out <- gwt_med
+    }else{
+      gwt_out <- cbind(gwt_out, gwt_med)
+    }
+    
+  }
+  
+  colnames(gwt_out) <- 1:26
+  return(gwt_out)
+  
+}
+
+#Temperature for ranking weather types
+
+#whole Switzerland
+# stat_cols_tem0 <- which(colnames(tem0_data) %in% colnames(tem0_sl))
+
+#selected elevation categories
+eleva_catego <- matrix(c("low",     NA, NA, NA,
+                         "middle",  NA, NA, NA,
+                         "high",    NA, NA, NA),
+                       nrow = 4,
+                       ncol = 3)
+# eleva_catego <- matrix(c("low",     NA,       NA, NA,
+#                          "middle",  "high",   NA, NA,
+#                          NA,        NA,       NA, NA),
+#                        nrow = 4,
+#                        ncol = 3)
+regi_select <-  matrix(c("Jura", "Plateau", "Alps", "S_Alps",
+                         "Jura", "Plateau", "Alps", "S_Alps",
+                         "Jura", "Plateau", "Alps", "S_Alps"),
+                       nrow = 4,
+                       ncol = 3)
+# regi_select <-  matrix(c(NA, "Plateau", "Alps", NA,
+#                          NA, "Plateau", "Alps", NA,
+#                          NA, "Plateau", "Alps", NA),
+#                        nrow = 4,
+#                        ncol = 3)
+
+f_wtc_score <- function(col_sel){
+  
+  stat_ele_sel <- colnames(tem0_sl)[which(colnames(tem0_sl) %in% stat_meta$stn[which(stat_meta$category == eleva_catego[, col_sel])])]
+  stat_ele_sel <- stat_ele_sel[which(stat_ele_sel %in% stat_meta$stn[which(stat_meta$clim_reg %in% regi_select[, col_sel])])]
+  stat_cols_tem0 <- which(colnames(tem0_data) %in% stat_ele_sel)
+  
+  tem0_use <- tem0_data[, stat_cols_tem0]
+  
+  tem0_4_gwt <- apply(tem0_use, 1, med_na)
+  
+  tem0_4_gwt_slo <- f_sl(tem0_4_gwt)
+  
+  gwt_tem0 <- gwt_med(dates = tem0_data$date, clim_data = tem0_4_gwt, gwt_data = data_gwt26$value)
+  
+  #get rank out of mean values
+  num_hig_sel <- 15
+  num_low_sel <- 15
+  gwt_rank_tem0 <- matrix(NA, ncol = 26, nrow = 365)
+  
+  for (i in 1:365) {
+    
+    gwt_tem0_sort <- sort(gwt_tem0[i, ])
+    # print(length(gwt_tem0_sort))
+    # gwt_tem0_sort <- gwt_tem0_sort[1:15]
+    
+    if(length(gwt_tem0_sort) > sum(num_hig_sel, num_low_sel)){
+      gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:num_low_sel])
+      gwt_warm <- as.numeric(names(gwt_tem0_sort)[(length(gwt_tem0_sort) - num_hig_sel + 1) : length(gwt_tem0_sort)])
+    }else{
+      is.even <- function(x) {x %% 2 == 0}
+      if(is.even(length(gwt_tem0_sort))){
+        gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:(length(gwt_tem0_sort) / 2)])
+        gwt_warm <- as.numeric(names(gwt_tem0_sort)[((length(gwt_tem0_sort) / 2) + 1) : length(gwt_tem0_sort)])
+      }else{
+        gwt_cold <- as.numeric(names(gwt_tem0_sort)[1:(floor(length(gwt_tem0_sort) / 2))])
+        gwt_warm <- as.numeric(names(gwt_tem0_sort)[(ceiling((length(gwt_tem0_sort) / 2)) + 1) : length(gwt_tem0_sort)])
+      }
+    }
+    # gwt_rank_tem0[i, gwt_cold] <-  (-1 * length(gwt_cold)) : -1
+    # gwt_rank_tem0[i, gwt_warm] <-   1 : length(gwt_warm)
+    gwt_rank_tem0[i, gwt_cold] <-  -1
+    gwt_rank_tem0[i, gwt_warm] <-   1
+    
+  }
+  
+  #Determine driving weather types
+  f_sum_neg <- function(data_in){
+    
+    data_in[which(data_in > 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  f_sum_pos <- function(data_in){
+    
+    data_in[which(data_in < 0)] <- NA
+    score_out <- sum_na(data_in)
+    
+  }
+  gwt_sums_tem0_low <- apply(gwt_rank_tem0[ , ], 2, f_sum_neg)
+  gwt_sums_tem0_hig <- apply(gwt_rank_tem0[ , ], 2, f_sum_pos)
+  gwt_sums_tem0     <- apply(gwt_rank_tem0[ , ], 2, sum_na)
+  
+  names(gwt_sums_tem0_low) <- 1:26
+  names(gwt_sums_tem0_hig) <- 1:26
+  names(gwt_sums_tem0)     <- 1:26
+  
+  gwt_sums_tem0__low_sort <- sort(gwt_sums_tem0_low)
+  gwt_sums_tem0__hig_sort <- sort(gwt_sums_tem0_hig)
+  gwt_sums_tem0_sort      <- sort(gwt_sums_tem0)
+  
+  gwt_score_out <- cbind(gwt_sums_tem0_low, gwt_sums_tem0_hig, gwt_sums_tem0)
+  colnames(gwt_score_out) <- paste0(c("low_","hig_","net_"), "catego_sel")
+  
+  return(gwt_score_out)
+  
+  
+}
+
+wtc_score_regis_elev <- foreach(i = 1:ncol(eleva_catego), .combine = 'cbind') %dopar% {
+  
+  f_wtc_score(i)
+  
+}
+
+# gwt_lows_tem0  <- 1:5
+# gwt_highs_tem0 <- 21:26
+# gwt_low_tem0   <- as.numeric(names(gwt_sums_tem0_sort)[gwt_lows_tem0])
+# gwt_high_tem0  <- as.numeric(names(gwt_sums_tem0_sort)[gwt_highs_tem0])
+
+gwt_low_elev <- c(1:8, 25)
+gwt_high_elev <- c(9:16, 26)
+
+#Calculate changes in frequencies
+gwt_elev_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_high_elev)*100*10# [%/dec]
+
+gwt_elev_low  <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
+                               end_year = end_year, window_width = window_width,
+                               cover_thresh= cover_thres, method_analys = "weather_type_window_likeli_sens_slope",
+                               weather_type = gwt_low_elev)*100*10 # [%/dec]
 
 
 #WTC_number_cor_tem0----

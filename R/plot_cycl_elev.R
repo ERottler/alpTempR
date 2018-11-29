@@ -23,7 +23,7 @@
 plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = "",
                            margins_1 = c(1.3, 1.5, 1.8, 0.2), margins_2 = c(1.3, 0.2, 1.8, 3),
                            no_col = F, show_mk = F, aggr_cat_mean = F,with_hom_dat=F,
-                           smooth_val = 0.1, mk_sig_level = 0.05, add_st_num = T){
+                           smooth_val = 0.2, mk_sig_level = 0.05, add_st_num = T){
 
   #Get station IDs
   stat_meta_sel <- data_meta[which(data_meta$stn %in% colnames(data_in)), ]
@@ -73,6 +73,7 @@ plot_cycl_elev <- function(data_in, data_mk, data_in_me, data_meta, main_text = 
   cyc_HS_me <- med_na(cyc_HS)
   cyc_MS_me <- med_na(cyc_MS)
   cyc_LS_me <- med_na(cyc_LS)
+  #print(paste(cyc_HS_me, cyc_MS_me, cyc_LS_me))
 
   #Using mean instead of median for calculation af category averages
   if(aggr_cat_mean){
