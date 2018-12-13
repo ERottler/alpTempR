@@ -231,7 +231,7 @@ image_cycle_elev(data_in = snow_li,
 dev.off()
 
 
-#wtc_gwt_26####
+#wtc_gwt_26_old####
 
 pdf(paste0("u:/RhineFlow/Elevation/gwt_26.pdf"), width = 7.09, height = 4)
 # tiff(paste0("u:/RhineFlow/Elevation/gwt_26.tiff"), width = 7.09, height = 4,
@@ -384,7 +384,7 @@ mtext("Trend window prob. [%/dec]", side = 4, line = 0.3, padj = 1, cex = 0.8)
 
 dev.off()
 
-#wtc_gwt_new----
+#wtc_gwt_26_regi_elev----
 
 pdf(paste0("u:/RhineFlow/Elevation/gwt_26_reg.pdf"), width = 7.09, height = 6)
 # tiff(paste0("u:/RhineFlow/Elevation/gwt_26_reg.tiff"), width = 7.09, height = 6,
@@ -496,7 +496,7 @@ axis(2, mgp = c(3, 0.3, 0), tck = -0.015, cex.axis = 1)
 abline(h = 0, lty = "dashed", lwd = 0.7)
 abline(v = c(8, 16, 24) * 3 + 1.5 + gaps_wtc_plot[c(8, 16, 24)], lty = "dashed", lwd = 0.7)
 mtext("a) WTE score: Elevation categories",    side = 3, line = 0.1,           cex = 1.0)
-mtext("GWT 26 weather type",        side = 1, line = 0.4,        padj = 1, cex = 0.8)
+mtext("GWT26 weather type",        side = 1, line = 0.4,        padj = 1, cex = 0.8)
 mtext("WTE score",    side = 2, line = 2.8,              padj = 1, cex = 0.8)
 mtext("cold",         side = 2, line = 1.8,    adj = 0.15, padj = 1, cex = 0.8, col = my_blu_bar)
 mtext("warm",         side = 2, line = 1.8,    adj = 0.85, padj = 1, cex = 0.8, col = my_red_bar)
@@ -647,7 +647,7 @@ axis(2, mgp = c(3, 0.3, 0), tck = -0.015, cex.axis = 1)
 abline(h = 0, lty = "dashed", lwd = 0.7)
 abline(v = c(8, 16, 24) * 4 + 1.5 + gaps_wtc_plot[c(8, 16, 24)], lty = "dashed", lwd = 0.7)
 mtext("c) WTE score: Climatol. subregions",    side = 3, line = 0.1,                   cex = 1.0)
-mtext("GWT 26 weather type",        side = 1, line = 0.4,        padj = 1, cex = 0.8)
+mtext("GWT26 weather type",        side = 1, line = 0.4,        padj = 1, cex = 0.8)
 mtext("WTE score",    side = 2, line = 2.8,              padj = 1, cex = 0.8)
 mtext("cold",         side = 2, line = 1.8,    adj = 0.15, padj = 1, cex = 0.8, col = my_blu_bar)
 mtext("warm",         side = 2, line = 1.8,    adj = 0.85, padj = 1, cex = 0.8, col = my_red_bar)
