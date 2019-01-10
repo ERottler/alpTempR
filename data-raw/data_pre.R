@@ -52,9 +52,9 @@ load(paste0(base_dir,"tre200dn.RData")) ; temn_data <- out_data #Air temperature
 load(paste0(base_dir,"tre200dx.RData")) ; temx_data <- out_data #Air temperature; daily maximum [°C]
 
 #Replace regular temperature data with homogenized time series
-index_h_tem0 <- which(colnames(tem0_data)[-1] %in% colnames(tem0_data_h)[-1])
-index_h_temn <- which(colnames(temn_data)[-1] %in% colnames(temn_data_h)[-1])
-index_h_temx <- which(colnames(temx_data)[-1] %in% colnames(temx_data_h)[-1])
+index_h_tem0 <- which(colnames(tem0_data) %in% colnames(tem0_data_h)[-1])
+index_h_temn <- which(colnames(temn_data) %in% colnames(temn_data_h)[-1])
+index_h_temx <- which(colnames(temx_data) %in% colnames(temx_data_h)[-1])
 
 tem0_data <- tem0_data[, -index_h_tem0]
 temn_data <- temn_data[, -index_h_temn]
@@ -64,11 +64,11 @@ temn_data <- cbind(temn_data, temn_data_h[, -1])
 temx_data <- cbind(temx_data, temx_data_h[, -1])
 
 #Save new data sets
-out_data <- tem0_data 
+out_data <- tem0_data
 save(file = paste0(base_dir, "tre200d0.RData"), list="out_data")
-out_data <- temn_data 
+out_data <- temn_data
 save(file = paste0(base_dir, "tre200dn.RData"), list="out_data")
-out_data <- temx_data 
+out_data <- temx_data
 save(file = paste0(base_dir, "tre200dx.RData"), list="out_data")
 
 #Calculation of absolute air humidity

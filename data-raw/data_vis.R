@@ -6,11 +6,11 @@
 
 #cycl_elev_mea----
 
-pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 7.09, height = 7)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.pdf"), width = 7.09, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 7.09, height = 7,
-#     units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_mea.tiff"), width = 7.09, height = 7,
+    units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -61,11 +61,11 @@ dev.off()
 
 #cycl_elev_slo----
 
-pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 7.09, height = 7)
+# pdf(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.pdf"), width = 7.09, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.png"), width = 6.7, height = 8,
 #     units = "in", res = 100)
-# tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 7.09, height = 7,
-#      units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/cycl_elev_slo.tiff"), width = 7.09, height = 7,
+     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -103,7 +103,7 @@ plot_cycl_elev(data_in = snow_sl, data_mk = snow_mk, data_in_me = snow_sl_an,
                data_meta = stat_meta, main_text = "f) Snow window probability [%/dec] ",
                no_col = F, show_mk = T, aggr_cat_mean = T, with_hom_dat = F,
                smooth_val = 0.1, mk_sig_level = 0.05, add_st_num = T)
-# 
+#
 # plot_cycl_elev(data_in = airp_sl, data_mk = airp_mk, data_in_me = airp_sl_an,
 #                data_meta = stat_meta, main_text = "g) Air pressure [hPa/dec] ",
 #                margins_1 = c(1.4,1.8,1.8,0.2), margins_2 = c(1.4,0.2,1.8,3.5),
@@ -129,11 +129,11 @@ pos_iso_text[2, ] <- c(67, 52, 34, 12)
 my_col <- colorRampPalette(brewer.pal(11,"RdYlBu"))(100); my_col <- my_col[length(my_col):1]
 
 
-pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 7.09, height = 7)
+# pdf("u:/RhineFlow/Elevation/imag_elev_slo.pdf", width = 7.09, height = 7)
 # png(paste0("u:/RhineFlow/Elevation/imag_elev_slo.png"), width = 6.7, height = 7,
 #     units = "in", res = 1200)
-# tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 7.09, height = 7,
-#      units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/imag_elev_slo.tiff"), width = 7.09, height = 7,
+     units = "in", res = 800)
 
 par(oma=c(0,0,0,0))
 par(family="serif")
@@ -386,9 +386,9 @@ dev.off()
 
 #wtc_gwt_26_regi_elev----
 
-pdf(paste0("u:/RhineFlow/Elevation/gwt_26_reg.pdf"), width = 7.09, height = 6)
-# tiff(paste0("u:/RhineFlow/Elevation/gwt_26_reg.tiff"), width = 7.09, height = 6,
-#      units = "in", res = 800)
+# pdf(paste0("u:/RhineFlow/Elevation/gwt_26_reg.pdf"), width = 7.09, height = 6)
+tiff(paste0("u:/RhineFlow/Elevation/gwt_26_reg.tiff"), width = 7.09, height = 6,
+     units = "in", res = 800)
 
 gwt_max <- max_na(c(loess_NA_restore(gwt_elev_low),
                     loess_NA_restore(gwt_elev_high),
@@ -432,19 +432,19 @@ plot(((1:26) * 3 - 3) + gaps_wtc_plot, wtc_score_regis_elev[, 1], type = "n", co
      xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
      ylim = y_lim, xlim = x_lim)
 
-rect(xleft = -0.5, ybottom = min_na(wtc_score_regis_elev) - 30, 
+rect(xleft = -0.5, ybottom = min_na(wtc_score_regis_elev) - 30,
      xright = (8 * 3) + gaps_wtc_plot[8] + 1.5,
      ytop =  max_na(wtc_score_regis_elev) + 60, col = my_blu_rec, border = NA, lwd = 1)
 
-rect(xleft = (9 * 3) + gaps_wtc_plot[8] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30, 
+rect(xleft = (9 * 3) + gaps_wtc_plot[8] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30,
      xright = (16 * 3) + gaps_wtc_plot[16] + 1.5,
      ytop =  max_na(wtc_score_regis_elev) + 60, col = my_red_rec, border = NA, lwd = 1)
 
-rect(xleft = (25 * 3) + gaps_wtc_plot[24] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30, 
+rect(xleft = (25 * 3) + gaps_wtc_plot[24] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30,
      xright = (25 * 3) + gaps_wtc_plot[25] + 1.5,
      ytop =  max_na(wtc_score_regis_elev) + 60, col = my_blu_rec, border = NA, lwd = 1)
 
-rect(xleft = (26 * 3) + gaps_wtc_plot[25] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30, 
+rect(xleft = (26 * 3) + gaps_wtc_plot[25] - 1.5, ybottom = min_na(wtc_score_regis_elev) - 30,
      xright = (26 * 3) + gaps_wtc_plot[26] + 1.5,
      ytop =  max_na(wtc_score_regis_elev) + 60, col = my_red_rec, border = NA, lwd = 1)
 
@@ -571,19 +571,19 @@ plot(((1:26) * 4 - 3) + gaps_wtc_plot, wtc_score_regis_tem0[, 1], type = "n", co
      xaxs = "i", yaxs = "i", axes = F, ylab = "", xlab = "",
      ylim = y_lim, xlim = x_lim)
 
-rect(xleft = -0.5, ybottom = min_na(wtc_score_regis_tem0) - 30, 
+rect(xleft = -0.5, ybottom = min_na(wtc_score_regis_tem0) - 30,
      xright = (8 * 4) + gaps_wtc_plot[8] + 1.5,
      ytop =  max_na(wtc_score_regis_tem0) + 60, col = my_blu_rec, border = NA, lwd = 1)
 
-rect(xleft = (9 * 4) + gaps_wtc_plot[8] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30, 
+rect(xleft = (9 * 4) + gaps_wtc_plot[8] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30,
      xright = (16 * 4) + gaps_wtc_plot[16] + 1.5,
      ytop =  max_na(wtc_score_regis_tem0) + 60, col = my_red_rec, border = NA, lwd = 1)
 
-rect(xleft = (25 * 4) + gaps_wtc_plot[24] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30, 
+rect(xleft = (25 * 4) + gaps_wtc_plot[24] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30,
      xright = (25 * 4) + gaps_wtc_plot[25] + 1.5,
      ytop =  max_na(wtc_score_regis_tem0) + 60, col = my_blu_rec, border = NA, lwd = 1)
 
-rect(xleft = (26 * 4) + gaps_wtc_plot[25] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30, 
+rect(xleft = (26 * 4) + gaps_wtc_plot[25] - 2.5, ybottom = min_na(wtc_score_regis_tem0) - 30,
      xright = (26 * 4) + gaps_wtc_plot[26] + 1.5,
      ytop =  max_na(wtc_score_regis_tem0) + 60, col = my_red_rec, border = NA, lwd = 1)
 
@@ -753,10 +753,10 @@ dev.off()
 
 #seas_vals_category####
 
-pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 7.09, height = 4)
+# pdf(paste0("u:/RhineFlow/Elevation/seas_vals_cat.pdf"), width = 7.09, height = 4)
 
-# tiff(paste0("u:/RhineFlow/Elevation/seas_vals_cat.tiff"), width = 7.09, height = 4,
-#      units = "in", res = 800)
+tiff(paste0("u:/RhineFlow/Elevation/seas_vals_cat.tiff"), width = 7.09, height = 4,
+     units = "in", res = 800)
 
 par(oma = c(0,0,0,0))
 par(family = "serif")
