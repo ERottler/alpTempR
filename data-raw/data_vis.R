@@ -516,7 +516,6 @@ lines(c(2,2), c(125+0, 190+0), type = "l", lwd = 0.5)
 lines(c(3,3), c(125+0, 160+0), type = "l", lwd = 0.5)
 box(lwd = 1.2)
 
-box(lwd = 1.2)
 
 directs <- rep(c("W", "SW", "NW", "N", "NE", "E", "SE", "S"), 3)
 pos_labs <- ((1:26) * 3 - 1.5) + gaps_wtc_plot

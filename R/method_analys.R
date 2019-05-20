@@ -1,14 +1,12 @@
-#' Pre-withened nonlinear Sen´s slope.
+#' Sen´s slope linear trend.
 #'
-#' Calculation of nonlinear pre-whitened Theil-Sen´s slope using \link{zyp.trend.vector}.
-#' To remove lag-1 autocorrelation, the input series is pre-withened using the
-#' Zhang approach. Trend magnitude only is calculated when percentage of NAs in
+#' Calculation of Theil-Sen´s slope using \link{zyp.trend.vector}. Trend magnitude only is calculated when percentage of NAs in
 #' input vector does not exceed a pre-defined threshold.
 #'
 #' @param data_in  vector of input data
 #' @param cover_thresh Trend only calculated when percentage of NAs in input vector
 #' does not exceed cover_thresh (0-1)
-#' @return Nonlinear pre-withened Theil-Sen´s slope.
+#' @return Theil-Sen´s slope.
 #' @examples
 #' data_slope <- c(2, 3, 5, 6 ,8, 5, 8, 12, NA, NA)
 #' sens_slope(data_in, cover_thresh = 0.5)
@@ -18,7 +16,8 @@ sens_slope <- function(data_in, cover_thresh = 0.9){
   if(length(which(is.na(data_in))) / length(data_in) > (1-cover_thresh)){
     sens_slo <-  NA
   }else{
-    sens_slo <- as.numeric(zyp.trend.vector(data_in, method = "zhang", conf.intervals = F)[2])
+    sens_slo <- as.numeric(zyp.sen(data_in~time_step)$coefficients[2])
+    # sens_slo <- as.numeric(zyp.trend.vector(data_in, method = "zhang", conf.intervals = F)[2])
   }
   return(sens_slo)
 }
