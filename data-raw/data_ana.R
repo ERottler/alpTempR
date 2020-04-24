@@ -762,7 +762,7 @@ wtc_score_regis_tem0 <- foreach(i = 1:length(clim_regions), .combine = 'cbind') 
 
 gwt_low_tem0 <- c(1:8, 25)
 gwt_high_tem0 <- c(9:16, 26)
-
+      
 #Calculate changes in frequencies
 gwt_tem0_high <- moving_analys(dates = data_gwt26$date, values = data_gwt26$value, start_year = start_year,
                                end_year = end_year, window_width = window_width,
@@ -2268,3 +2268,37 @@ sum(gwt26_frequ[wt_humi])
 
 #stop cluster####
 stopCluster(my_clust)
+
+#Save for app----
+
+save(ahum_me, ahum_mk, ahum_sl, ahum_sr, 
+     airp_me, airp_mk, airp_sl,
+     clou_me, clou_mk, clou_sl,
+     radi_me, radi_mk, radi_sl,
+     snow_me, snow_mk, snow_sl, snow_li,
+     suns_me, suns_mk, suns_sl,
+     tem0_me, tem0_mk, tem0_sl,
+     temn_me, temn_mk, temn_sl,
+     temx_me, temx_mk, temx_sl,
+     
+     ahum_me_an, ahum_sr_an,
+     airp_me_an, airp_sl_an,
+     clou_me_an, clou_sl_an,
+     radi_me_an, radi_sl_an,
+     snow_me_an, snow_sl_an,
+     suns_me_an, suns_sl_an,
+     tem0_me_an, tem0_sl_an,
+     temn_me_an, temn_sl_an,
+     temx_me_an, temx_sl_an,
+     
+     stat_meta, diff_max_min,
+     ele_HS, ele_LS, ele_MS,
+     cover_thres, date_data,
+     start_year, end_year, window_width,
+     
+     gwt_elev_low, gwt_elev_high, 
+     gwt_tem0_low, gwt_tem0_high, 
+     wtc_score_regis_elev, 
+     wtc_score_regis_tem0,
+     
+     file = "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/data/results_60DMA.RData")

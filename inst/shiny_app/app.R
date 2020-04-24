@@ -18,10 +18,10 @@ library("RColorBrewer")
 library("zyp")
 library("shape")
 
-# baseDir  <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
-# countDir <- "u:/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/data/"
-baseDir  <- "/srv/shiny-server/AlpTempApp/"
-countDir <- "/home/shiny/AlpTempApp/"
+# baseDir  <- "/home/erwin/ownCloud/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/"
+# countDir <- "/home/erwin/ownCloud/RhineFlow/Elevation/R/alpTempR/inst/shiny_app/data/"
+baseDir  <- "/srv/shiny-server/alpTemp/"
+countDir <- "/home/rottler/alpTemp/"
 setwd(baseDir)
 
 load(paste0(baseDir,"data/results_30DMA.RData"))
