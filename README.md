@@ -1,18 +1,14 @@
-# alptempr
+# Elevation-dependent warming in the Swiss Alps
 
-+++UNDER CONSTRUCTION+++
+This repository stores R code used to analyse alpine climate data from Switzerland using average trend statistics. Main results were published in:
 
-Elevation-dependent warming in the Swiss Alps: features, forcings and feedbacks
+Rottler, E, Kormann, C, Francke, T, Bronstert, A: Elevation‐dependent warming in the Swiss Alps 1981–2017: Features, forcings and feedbacks. Int J Climatol. 2019; 39: 2556– 2568. https://doi.org/10.1002/joc.5970
 
-This repository stores R code used for analyzing alpine climate data from Switzerland using average trend statistics to address the following research questions: 
-- Are temperatures in Switzerland changing at a different rate depending on elevation?
-- What are underlying driving mechanisms of elevation dependent temperature changes?
+### Summary
+Due to the environmental and socio‐economic importance of mountainous regions, it is crucial to understand causes and consequences of climatic changes in those sensitive landscapes. Daily resolution alpine climate data from Switzerland covering an elevation range of over 3,000 m between 1981 and 2017 have been analysed using highly resolved trends in order to gain a better understanding of features, forcings and feedbacks related to temperature changes in mountainous regions. Particular focus is put on processes related to changes in weather types, incoming solar radiation, cloud cover, air humidity, snow/ice and elevation dependency of temperature trends.
 
-Within this context, we place special attention on mechanisms related to changes in incoming solar radiation, cloud cover, air humidity, snow cover and large-scale circulation. 
+### Feedback
+Should you have any questions or want more information, please do not hesitate to write an email to: rottler(a)uni-potsdam.de
 
-The code comes in form of an R package. For the usage within R use the install_gitub function from the devtools package:
-```R
-install_github("ERottler/alptempr")
-```
-
-First results can be viewed at: http://seca-vista.geo.uni-potsdam.de:3838/AlpTempApp/
+### Funding
+This research was funded by Deutsche Forschungsgemeinschaft (DFG) within the graduate research training group NatRiskChange (GRK 2043/1) at the University of Potsdam: https://www.uni-potsdam.de/en/natriskchange
